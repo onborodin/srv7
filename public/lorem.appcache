@@ -1,0 +1,12 @@
+CACHE MANIFEST
+CACHE:
+app-scheme.svg
+favicon.ico
+main.html
+main.js
+manifest.json
+polyfills.js
+runtime.js
+scripts.js
+styles.css
+vendor.js

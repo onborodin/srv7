@@ -1,0 +1,8 @@
+autom4te.cache/
+*.log
+*.pid
+*.status
+*~
+*.o
+.deps/
+*.core

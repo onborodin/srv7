@@ -16,20 +16,20 @@ connection_manager::connection_manager() {
 }
 
 void connection_manager::start(connection_ptr c) {
-    connections_.insert(c);
+    connections.insert(c);
     c->start();
 }
 
 void connection_manager::stop(connection_ptr c) {
-    connections_.erase(c);
+    connections.erase(c);
     c->stop();
 }
 
 void connection_manager::stop_all() {
-    for (auto c: connections_) {
+    for (auto c: connections) {
         c->stop();
     }
-    connections_.clear();
+    connections.clear();
 }
 
 } // namespace server

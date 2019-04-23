@@ -13,7 +13,9 @@
 
 #include <array>
 #include <memory>
+
 #include <asio.hpp>
+
 #include "reply.hpp"
 #include "request.hpp"
 #include "request_handler.hpp"
@@ -23,38 +25,29 @@ namespace server {
 
 class connection_manager;
 
-
 class connection : public std::enable_shared_from_this<connection> {
+  private:
+
+    asio::ip::tcp::socket socket;
+    class connection_manager& connection_manager;
+    class request_handler& request_handler;
+    std::array<char, 8192> buffer;
+    request request;
+    request_parser request_parser;
+    reply reply;
+
+    void do_read();
+    void do_write();
+
+
   public:
     connection(const connection&) = delete;
     connection& operator=(const connection&) = delete;
 
-    /// Construct a connection with the given socket.
-    explicit connection(asio::ip::tcp::socket socket,
-        connection_manager& manager, request_handler& handler);
+    explicit connection(asio::ip::tcp::socket socket, class connection_manager& manager, class request_handler& handler);
 
-    /// Start the first asynchronous operation for the connection.
     void start();
-
-    /// Stop all asynchronous operations associated with the connection.
     void stop();
-
-  private:
-    void do_read();
-    void do_write();
-
-    asio::ip::tcp::socket socket_;
-    connection_manager& connection_manager_;
-
-    request_handler& request_handler_;
-
-    std::array<char, 8192> buffer_;
-
-    request request_;
-
-    request_parser request_parser_;
-
-    reply reply_;
 };
 
 typedef std::shared_ptr<connection> connection_ptr;

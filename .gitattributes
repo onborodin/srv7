@@ -1,0 +1,8 @@
+*.cpp linguist-language=C++
+*.hpp linguist-language=C++
+*.sh linguist-vendored
+*.m4 linguist-vendored
+m4/* linguist-vendored
+*Makefile* linguist-vendored
+config* linguist-vendored
+*.Po linguist-vendored
