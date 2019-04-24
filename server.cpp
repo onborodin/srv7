@@ -1,21 +1,34 @@
-//
-// server.cpp
-// ~~~~~~~~~~
-//
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
+/*
+ *
+ * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
+
+
+#include <utility>
+#include <signal.h>
 
 #include "server.hpp"
-#include <signal.h>
-#include <utility>
 
 namespace server {
 
 server::server(const std::string& address, const std::string& port)
-    : io_context(1), signals(io_context), acceptor(io_context), connection_manager()
+    : io_context(1), signals(io_context), acceptor(io_context), manager()
     {
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
@@ -52,8 +65,8 @@ void server::do_accept() {
             return;
         }
         if (!ec) {
-            connection_manager.start(
-                std::make_shared<connection>(std::move(socket), connection_manager)
+            manager.start(
+                std::make_shared<connection>(std::move(socket), manager)
             );
         }
         do_accept();
@@ -67,7 +80,7 @@ void server::do_await_stop() {
         // operations. Once all operations have finished the io_context::run()
         // call will exit.
         acceptor.close();
-        connection_manager.stop_all();
+        manager.stop_all();
     });
 }
 

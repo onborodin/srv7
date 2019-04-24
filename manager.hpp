@@ -8,14 +8,14 @@
 
 namespace server {
 
-class connection_manager {
+class manager {
     private:
         std::set<connection_ptr> connections;
     public:
-        connection_manager(const connection_manager&) = delete;
-        connection_manager& operator=(const connection_manager&) = delete;
+        manager(const manager&) = delete;
+        manager& operator=(const manager&) = delete;
 
-        connection_manager();
+        manager();
         void start(connection_ptr c);
         void stop(connection_ptr c);
         void stop_all();

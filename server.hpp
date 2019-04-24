@@ -6,8 +6,7 @@
 #include <string>
 
 #include "connection.hpp"
-#include "connection_manager.hpp"
-#include "request_handler.hpp"
+#include "manager.hpp"
 
 namespace server {
 
@@ -17,7 +16,7 @@ class server {
     asio::signal_set signals;
     asio::ip::tcp::acceptor acceptor;
 
-    connection_manager connection_manager;
+    manager manager;
 
     void do_accept();
     void do_await_stop();

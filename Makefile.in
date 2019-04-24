@@ -107,7 +107,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_srv6_OBJECTS = connection_manager.$(OBJEXT) connection.$(OBJEXT) \
+am_srv6_OBJECTS = manager.$(OBJEXT) connection.$(OBJEXT) \
 	main.$(OBJEXT) server.$(OBJEXT)
 srv6_OBJECTS = $(am_srv6_OBJECTS)
 srv6_LDADD = $(LDADD)
@@ -287,7 +287,7 @@ ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
 AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
 srv6_SOURCES = \
-	connection_manager.cpp \
+	manager.cpp \
 	connection.cpp \
 	main.cpp \
 	server.cpp
@@ -399,8 +399,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connection.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connection_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server.Po@am__quote@
 
 .cpp.o:

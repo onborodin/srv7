@@ -33,12 +33,12 @@
 #include <chrono>
 
 #include "connection.hpp"
-#include "connection_manager.hpp"
+#include "manager.hpp"
 
 namespace server {
 
-connection::connection(asio::ip::tcp::socket socket, class connection_manager& manager)
-    : socket(std::move(socket)), connection_manager(manager)
+connection::connection(asio::ip::tcp::socket socket, class manager& manager)
+    : socket(std::move(socket)), manager(manager)
     { }
 
 void connection::start() {
@@ -61,7 +61,7 @@ void connection::do_read() {
 
             do_write();
         } else if (ec != asio::error::operation_aborted) {
-            connection_manager.stop(shared_from_this());
+            manager.stop(shared_from_this());
         }
     };
 
@@ -107,7 +107,7 @@ void connection::do_write() {
                 ignored_ec);
         }
         if (ec != asio::error::operation_aborted) {
-            connection_manager.stop(shared_from_this());
+            manager.stop(shared_from_this());
         }
     };
 

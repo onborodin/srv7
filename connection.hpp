@@ -28,13 +28,13 @@
 
 namespace server {
 
-class connection_manager;
+class manager;
 
 class connection : public std::enable_shared_from_this<connection> {
   private:
 
     asio::ip::tcp::socket socket;
-    class connection_manager& connection_manager;
+    class manager& manager;
 
     std::string buffer;
 
@@ -46,7 +46,7 @@ class connection : public std::enable_shared_from_this<connection> {
     connection(const connection&) = delete;
     connection& operator=(const connection&) = delete;
 
-    explicit connection(asio::ip::tcp::socket socket, class connection_manager& manager);
+    explicit connection(asio::ip::tcp::socket socket, class manager& manager);
 
     void start();
     void stop();
