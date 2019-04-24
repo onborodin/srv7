@@ -65,7 +65,7 @@ int readfile(std::string& name, std::string& content) {
 
 connection::connection(
         asio::ip::tcp::socket socket,
-        class manager& manager,
+        std::shared_ptr<srv6::manager> manager,
         std::shared_ptr<srv6::config> config
     ) :
     socket(std::move(socket)),
@@ -74,14 +74,14 @@ connection::connection(
     { }
 
 void connection::start() {
-    do_read();
+    read();
 }
 
 void connection::stop() {
     socket.close();
 }
 
-void connection::do_read() {
+void connection::read() {
     auto self(shared_from_this());
 
     auto func = [this, self](std::error_code ec, std::size_t size) {
@@ -90,9 +90,9 @@ void connection::do_read() {
             raw_request_header = buffer.substr(0, size);
             buffer.erase(0, size);
 
-            do_write();
+            write();
         } else if (ec != asio::error::operation_aborted) {
-            manager.stop(shared_from_this());
+            manager->stop(shared_from_this());
         }
     };
 
@@ -100,9 +100,7 @@ void connection::do_read() {
     asio::async_read_until(socket, asio::dynamic_buffer(buffer), delimeter, func);
 }
 
-
-
-void connection::do_write() {
+void connection::write() {
     auto self(shared_from_this());
     auto func = [this, self](std::error_code ec, std::size_t) {
         if (!ec) {
@@ -112,44 +110,13 @@ void connection::do_write() {
                 ignored_ec);
         }
         if (ec != asio::error::operation_aborted) {
-            manager.stop(shared_from_this());
+            manager->stop(shared_from_this());
         }
     };
 
     dispatcher dsp(config);
     dsp.parse(raw_request_header);
     dsp.handle(response);
-
-    //std::string path = "./configure";
-
-    //std::string body;
-
-    //std::stringstream header;
-    //size_t size = 0;
-
-    //std::ifstream is(path.c_str(), std::ios::in | std::ios::binary);
-    //if (!is) {
-        //header << "HTTP/1.1 404 Not Found\r\n";
-        //header << "Content-Type: text/plain\r\n";
-    //} else {
-        //header << "HTTP/1.1 200 OK\r\n";
-        //header << "Content-Type: text/plain\r\n";
-
-        //char buf[512];
-        //while (is.read(buf, sizeof(buf)).gcount() > 0) {
-            //body.append(buf, is.gcount());
-        //}
-    //}
-
-    //header << "Server: Srv2/0.1\r\n";
-    //header << "Date: " << timestamp() << "\r\n";
-    //header << "Connection: close\r\n";
-    //header << "Content-Length: " << body.length() << "\r\n";
-    //header << "\r\n";
-    //header << "\r\n";
-
-    //response.append(header.str());
-    //response.append(body);
 
     asio::async_write(socket, asio::buffer(response), func);
 }

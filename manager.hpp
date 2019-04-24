@@ -10,14 +10,14 @@ namespace srv6 {
 
 class manager {
     private:
-        std::set<connection_ptr> connections;
+        std::set<std::shared_ptr<connection>> connections;
     public:
         manager(const manager&) = delete;
         manager& operator=(const manager&) = delete;
 
         manager();
-        void start(connection_ptr c);
-        void stop(connection_ptr c);
+        void start(std::shared_ptr<connection> c);
+        void stop(std::shared_ptr<connection> c);
         void stop_all();
 };
 

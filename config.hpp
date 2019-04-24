@@ -30,11 +30,12 @@ namespace srv6 {
 
 class config {
     public:
-        std::string basedir = "./";
+        std::string basedir = "./public";
+        std::string publicdir = "./public";
         std::string port = "1026";
         std::string address = "0.0.0.0";
         std::size_t threads = 10;
-        int max_listen_connections = 1024;
+        int backlogs = 1024;
         srv6::keymap filemap;
 };
 

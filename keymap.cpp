@@ -20,7 +20,7 @@
  */
 
 
-#include <iostream>
+#include <mutex>
 #include <map>
 
 #include "keymap.hpp"
@@ -36,8 +36,10 @@ std::string keymap::tolower(std::string s) {
 
 void keymap::set(std::string key, std::string arg) {
     key = tolower(key);
-    keymap.erase(key);
     std::pair<std::string, std::string> pair = { key, arg };
+
+    std::unique_lock<std::mutex> lock(mutex);
+    keymap.erase(key);
     keymap.insert(pair);
 }
 

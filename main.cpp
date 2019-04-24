@@ -29,6 +29,8 @@
 #include "server.hpp"
 #include "config.hpp"
 #include "keymap.hpp"
+#include "manager.hpp"
+
 
 int main(int argc, char* argv[]) {
     try {
@@ -44,12 +46,17 @@ int main(int argc, char* argv[]) {
         config->filemap.set("cpp", "text/plain");
 
         config->basedir = std::filesystem::current_path();
-        config->basedir += "/public/";
+        config->publicdir = config->basedir + "/public/";
+
+        //std::cerr << config->publicdir << std::endl;
 
         config->port = "1026";
-        config->threads = 5;
+        config->threads = 10;
+        config->backlogs = 2048;
 
-        srv6::server s(config);
+        auto manager = std::make_shared<srv6::manager>();
+
+        srv6::server s(config, manager);
         s.run();
     } catch (std::exception& e) {
         std::cerr << "exception: " << e.what() << "\n";

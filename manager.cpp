@@ -23,15 +23,14 @@
 
 namespace srv6 {
 
-manager::manager() {
-}
+manager::manager() {}
 
-void manager::start(connection_ptr c) {
+void manager::start(std::shared_ptr<connection> c) {
     connections.insert(c);
     c->start();
 }
 
-void manager::stop(connection_ptr c) {
+void manager::stop(std::shared_ptr<connection> c) {
     connections.erase(c);
     c->stop();
 }

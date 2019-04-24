@@ -95,7 +95,9 @@ class dispatcher {
                 request.uri = "/index.html";
             }
 
-            std::string path = config->basedir + "/"+ request.uri;
+            std::string path = config->publicdir + "/"+ request.uri;
+
+            //std::cerr << path << std::endl;
 
             int size = 0;
             if ((size = readfile(path, body)) > 0) {

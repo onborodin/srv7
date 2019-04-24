@@ -22,8 +22,9 @@
 #ifndef KEYMAP_HPP
 #define KEYMAP_HPP
 
-#include <iostream>
+#include <mutex>
 #include <map>
+
 
 namespace srv6 {
 
@@ -31,6 +32,7 @@ class keymap {
     private:
         std::map<std::string, std::string> keymap;
         std::string tolower(std::string s);
+        std::mutex mutex;
     public:
         void set(std::string key, std::string arg);
         std::string get(std::string key);

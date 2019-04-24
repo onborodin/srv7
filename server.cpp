@@ -27,18 +27,19 @@
 
 namespace srv6 {
 
-server::server(std::shared_ptr<srv6::config> config)
-    : io_context(1),
-        signals(io_context),
-        acceptor(io_context),
-        config(config),
-        manager()
+server::server(std::shared_ptr<srv6::config> config, std::shared_ptr<srv6::manager> manager) :
+    io_context(1),
+    signals(io_context),
+    acceptor(io_context),
+    config(config),
+    manager(manager)
     {
-    // Register to handle the signals that indicate when the server should exit.
+    // register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
     // provided all registration for the specified signal is made through Asio.
     signals.add(SIGINT);
     signals.add(SIGTERM);
+
     #if defined(SIGQUIT)
     signals.add(SIGQUIT);
     #endif // defined(SIGQUIT)
@@ -51,7 +52,7 @@ server::server(std::shared_ptr<srv6::config> config)
     acceptor.open(endpoint.protocol());
     acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
     acceptor.bind(endpoint);
-    acceptor.listen(2048);
+    acceptor.listen(config->backlogs);
 
     do_accept();
 }
@@ -62,13 +63,13 @@ void server::run() {
 
 void server::do_accept() {
     auto func = [this](std::error_code ec, asio::ip::tcp::socket socket) {
-        // Check whether the server was stopped by a signal before this
+        // check whether the server was stopped by a signal before this
         // completion handler had a chance to run.
         if (!acceptor.is_open()) {
             return;
         }
         if (!ec) {
-            manager.start(
+            manager->start(
                 std::make_shared<connection>(std::move(socket), manager, config)
             );
         }
@@ -80,11 +81,11 @@ void server::do_accept() {
 void server::do_await_stop() {
     signals.async_wait(
     [this](std::error_code ec, int signo) {
-        // The server is stopped by cancelling all outstanding asynchronous
+        // the server is stopped by cancelling all outstanding asynchronous
         // operations. Once all operations have finished the io_context::run()
         // call will exit.
         acceptor.close();
-        manager.stop_all();
+        manager->stop_all();
     });
 }
 

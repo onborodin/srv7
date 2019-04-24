@@ -22,12 +22,13 @@
 #ifndef HTTP_SERVER_HPP
 #define HTTP_SERVER_HPP
 
-#include <asio.hpp>
 #include <string>
 
-#include "connection.hpp"
 #include "manager.hpp"
 #include "config.hpp"
+#include "connection.hpp"
+
+#include <asio.hpp>
 
 namespace srv6 {
 
@@ -38,8 +39,7 @@ class server {
     asio::ip::tcp::acceptor acceptor;
 
     std::shared_ptr<srv6::config> config;
-
-    manager manager;
+    std::shared_ptr<srv6::manager> manager;
 
     void do_accept();
     void do_await_stop();
@@ -48,8 +48,10 @@ class server {
     server(const server&) = delete;
     server& operator=(const server&) = delete;
 
-    //explicit server(const std::string& address, const std::string& port);
-    explicit server(std::shared_ptr<srv6::config> config);
+    explicit server(
+        std::shared_ptr<srv6::config> config,
+        std::shared_ptr<srv6::manager> manager
+    );
     void run();
 
 };

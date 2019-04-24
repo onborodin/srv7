@@ -36,7 +36,8 @@ class manager;
 class connection : public std::enable_shared_from_this<connection> {
   private:
     asio::ip::tcp::socket socket;
-    class manager& manager;
+    //class manager& manager;
+    std::shared_ptr<srv6::manager> manager;
     std::shared_ptr<srv6::config> config;
 
     std::string buffer;
@@ -45,8 +46,8 @@ class connection : public std::enable_shared_from_this<connection> {
 
     std::string response;
 
-    void do_read();
-    void do_write();
+    void read();
+    void write();
 
   public:
     connection(const connection&) = delete;
@@ -54,15 +55,13 @@ class connection : public std::enable_shared_from_this<connection> {
 
     explicit connection(
         asio::ip::tcp::socket socket,
-        class manager& manager,
+        std::shared_ptr<srv6::manager> manager,
         std::shared_ptr<srv6::config> config
     );
 
     void start();
     void stop();
 };
-
-typedef std::shared_ptr<connection> connection_ptr;
 
 } // namespace srv6
 
