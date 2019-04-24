@@ -18,7 +18,6 @@ class server {
     asio::ip::tcp::acceptor acceptor;
 
     connection_manager connection_manager;
-    request_handler request_handler;
 
     void do_accept();
     void do_await_stop();
@@ -27,7 +26,7 @@ class server {
     server(const server&) = delete;
     server& operator=(const server&) = delete;
 
-    explicit server(const std::string& address, const std::string& port, const std::string& doc_root);
+    explicit server(const std::string& address, const std::string& port);
     void run();
 
 };

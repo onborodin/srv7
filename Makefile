@@ -108,9 +108,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_srv6_OBJECTS = connection_manager.$(OBJEXT) connection.$(OBJEXT) \
-	main.$(OBJEXT) mime_types.$(OBJEXT) reply.$(OBJEXT) \
-	request_handler.$(OBJEXT) request_parser.$(OBJEXT) \
-	server.$(OBJEXT)
+	main.$(OBJEXT) server.$(OBJEXT)
 srv6_OBJECTS = $(am_srv6_OBJECTS)
 srv6_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -292,10 +290,6 @@ srv6_SOURCES = \
 	connection_manager.cpp \
 	connection.cpp \
 	main.cpp \
-	mime_types.cpp \
-	reply.cpp \
-	request_handler.cpp \
-	request_parser.cpp \
 	server.cpp
 
 all: autoconf.hpp
@@ -407,10 +401,6 @@ distclean-compile:
 include ./$(DEPDIR)/connection.Po
 include ./$(DEPDIR)/connection_manager.Po
 include ./$(DEPDIR)/main.Po
-include ./$(DEPDIR)/mime_types.Po
-include ./$(DEPDIR)/reply.Po
-include ./$(DEPDIR)/request_handler.Po
-include ./$(DEPDIR)/request_parser.Po
 include ./$(DEPDIR)/server.Po
 
 .cpp.o:

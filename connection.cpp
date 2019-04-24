@@ -1,14 +1,24 @@
-//
-// connection.cpp
-// ~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
+/*
+ *
+ * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 
-#include "connection.hpp"
 #include <utility>
 #include <vector>
 
@@ -21,19 +31,15 @@
 #include <iomanip>
 
 #include <chrono>
-#include <thread>
 
-
+#include "connection.hpp"
 #include "connection_manager.hpp"
-#include "request_handler.hpp"
 
 namespace server {
 
-connection::connection(asio::ip::tcp::socket socket, class connection_manager& manager, class request_handler& handler)
-    : socket(std::move(socket)),
-      connection_manager(manager),
-      request_handler(handler) {
-}
+connection::connection(asio::ip::tcp::socket socket, class connection_manager& manager)
+    : socket(std::move(socket)), connection_manager(manager)
+    { }
 
 void connection::start() {
     do_read();
@@ -46,27 +52,24 @@ void connection::stop() {
 void connection::do_read() {
     auto self(shared_from_this());
 
-    auto func = [this, self](std::error_code ec, std::size_t bytes_transferred) {
+    auto func = [this, self](std::error_code ec, std::size_t size) {
         if (!ec) {
-            request_parser::result_type result;
-            std::tie(result, std::ignore) = request_parser.parse(
-                    request, buffer.data(), buffer.data() + bytes_transferred);
 
-            if (result == request_parser::good) {
-                request_handler.handle_request(request, reply);
-                do_write();
-            } else if (result == request_parser::bad) {
-                reply = reply::stock_reply(reply::bad_request);
-                do_write();
-            } else {
-                do_read();
-            }
+            std::string header = buffer.substr(0, size - 4);
+            buffer.erase(0, size);
+            //std::cerr << header << std::endl;
+
+            do_write();
         } else if (ec != asio::error::operation_aborted) {
             connection_manager.stop(shared_from_this());
         }
     };
 
-    socket.async_read_some(asio::buffer(buffer), func);
+    std::string delimeter = "\r\n\r\n";
+    asio::async_read_until(socket, asio::dynamic_buffer(buffer), delimeter, func);
+
+    //std::string buffer;
+    //socket.async_read_some(asio::buffer(buffer), func);
 }
 
 
