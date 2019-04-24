@@ -11,7 +11,6 @@
 #include "request_parser.hpp"
 #include "request.hpp"
 
-namespace http {
 namespace server3 {
 
 request_parser::request_parser()
@@ -241,4 +240,3 @@ bool request_parser::is_digit(int c) {
 }
 
 } // namespace server3
-} // namespace http

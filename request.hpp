@@ -15,7 +15,6 @@
 #include <vector>
 #include "header.hpp"
 
-namespace http {
 namespace server3 {
 
 /// A request received from a client.
@@ -29,6 +28,5 @@ class request {
 };
 
 } // namespace server3
-} // namespace http
 
 #endif // HTTP_SERVER3_REQUEST_HPP

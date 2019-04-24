@@ -17,7 +17,6 @@
 #include "reply.hpp"
 #include "request.hpp"
 
-namespace http {
 namespace server3 {
 
 request_handler::request_handler(const std::string& doc_root)
@@ -100,4 +99,3 @@ bool request_handler::url_decode(const std::string& in, std::string& out) {
 }
 
 } // namespace server3
-} // namespace http

@@ -1,20 +1,28 @@
-//
-// server.cpp
-// ~~~~~~~~~~
-//
-// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
+/*
+ *
+ * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ *
+ */
 
 #include "server.hpp"
-//#include <boost/bind.hpp>
-//#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <memory>
 
-namespace http {
 namespace server3 {
 
 server::server(const std::string& address, const std::string& port,
@@ -86,4 +94,3 @@ void server::handle_stop() {
 }
 
 } // namespace server3
-} // namespace http

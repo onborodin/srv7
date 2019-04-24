@@ -14,7 +14,6 @@
 #include <string>
 #include <boost/noncopyable.hpp>
 
-namespace http {
 namespace server3 {
 
 struct reply;
@@ -40,6 +39,5 @@ class request_handler
 };
 
 } // namespace server3
-} // namespace http
 
 #endif // HTTP_SERVER3_REQUEST_HANDLER_HPP

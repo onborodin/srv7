@@ -16,7 +16,6 @@
 #include <asio.hpp>
 #include "header.hpp"
 
-namespace http {
 namespace server3 {
 
 /// A reply to be sent to a client.
@@ -57,6 +56,5 @@ struct reply {
 };
 
 } // namespace server3
-} // namespace http
 
 #endif // HTTP_SERVER3_REPLY_HPP

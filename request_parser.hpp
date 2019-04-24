@@ -14,7 +14,6 @@
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple.hpp>
 
-namespace http {
 namespace server3 {
 
 class request;
@@ -87,6 +86,5 @@ class request_parser {
 };
 
 } // namespace server3
-} // namespace http
 
 #endif // HTTP_SERVER3_REQUEST_PARSER_HPP
