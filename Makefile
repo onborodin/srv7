@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = srv6$(EXEEXT)
+bin_PROGRAMS = srv7$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
@@ -107,11 +107,11 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_srv6_OBJECTS = manager.$(OBJEXT) connection.$(OBJEXT) \
-	main.$(OBJEXT) server.$(OBJEXT) requestll.$(OBJEXT) \
-	requestyy.$(OBJEXT) requestcc.$(OBJEXT) keymap.$(OBJEXT)
-srv6_OBJECTS = $(am_srv6_OBJECTS)
-srv6_LDADD = $(LDADD)
+am_srv7_OBJECTS = connection.$(OBJEXT) main.$(OBJEXT) \
+	mime_types.$(OBJEXT) reply.$(OBJEXT) request_handler.$(OBJEXT) \
+	request_parser.$(OBJEXT) server.$(OBJEXT)
+srv7_OBJECTS = $(am_srv7_OBJECTS)
+srv7_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -141,8 +141,8 @@ AM_V_CXXLD = $(am__v_CXXLD_$(V))
 am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(srv6_SOURCES)
-DIST_SOURCES = $(srv6_SOURCES)
+SOURCES = $(srv7_SOURCES)
+DIST_SOURCES = $(srv7_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -189,12 +189,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/ziggi/srv6/missing aclocal
+ACLOCAL = ${SHELL} /home/ziggi/srv7/missing aclocal
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/ziggi/srv6/missing autoconf
-AUTOHEADER = ${SHELL} /home/ziggi/srv6/missing autoheader
-AUTOMAKE = ${SHELL} /home/ziggi/srv6/missing automake
+AUTOCONF = ${SHELL} /home/ziggi/srv7/missing autoconf
+AUTOHEADER = ${SHELL} /home/ziggi/srv7/missing autoheader
+AUTOMAKE = ${SHELL} /home/ziggi/srv7/missing automake
 AWK = gawk
 BISON = /usr/local/bin/bison
 CPPFLAGS = 
@@ -219,9 +219,9 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -L${LOCALBASE}/lib -pthread -lreflex
+LIBS = -L${LOCALBASE}/lib -pthread
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/ziggi/srv6/missing makeinfo
+MAKEINFO = ${SHELL} /home/ziggi/srv7/missing makeinfo
 MKDIR_P = /usr/local/bin/gmkdir -p
 OBJEXT = o
 PACKAGE = main-cpp
@@ -237,10 +237,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 0.01
-abs_builddir = /home/ziggi/srv6
-abs_srcdir = /home/ziggi/srv6
-abs_top_builddir = /home/ziggi/srv6
-abs_top_srcdir = /home/ziggi/srv6
+abs_builddir = /home/ziggi/srv7
+abs_srcdir = /home/ziggi/srv7
+abs_top_builddir = /home/ziggi/srv7
+abs_top_srcdir = /home/ziggi/srv7
 ac_ct_CXX = clang++
 am__include = include
 am__leading_dot = .
@@ -259,7 +259,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/ziggi/srv6/install-sh
+install_sh = ${SHELL} /home/ziggi/srv7/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -287,15 +287,14 @@ AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
 AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
-srv6_SOURCES = \
-	manager.cpp \
+srv7_SOURCES = \
 	connection.cpp \
 	main.cpp \
-	server.cpp \
-	requestll.cpp \
-	requestyy.cpp \
-	requestcc.cpp \
-	keymap.cpp
+	mime_types.cpp \
+	reply.cpp \
+	request_handler.cpp \
+	request_parser.cpp \
+	server.cpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -393,9 +392,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-srv6$(EXEEXT): $(srv6_OBJECTS) $(srv6_DEPENDENCIES) $(EXTRA_srv6_DEPENDENCIES) 
-	@rm -f srv6$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(srv6_OBJECTS) $(srv6_LDADD) $(LIBS)
+srv7$(EXEEXT): $(srv7_OBJECTS) $(srv7_DEPENDENCIES) $(EXTRA_srv7_DEPENDENCIES) 
+	@rm -f srv7$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(srv7_OBJECTS) $(srv7_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -404,12 +403,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/connection.Po
-include ./$(DEPDIR)/keymap.Po
 include ./$(DEPDIR)/main.Po
-include ./$(DEPDIR)/manager.Po
-include ./$(DEPDIR)/requestcc.Po
-include ./$(DEPDIR)/requestll.Po
-include ./$(DEPDIR)/requestyy.Po
+include ./$(DEPDIR)/mime_types.Po
+include ./$(DEPDIR)/reply.Po
+include ./$(DEPDIR)/request_handler.Po
+include ./$(DEPDIR)/request_parser.Po
 include ./$(DEPDIR)/server.Po
 
 .cpp.o:
@@ -779,21 +777,8 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
-requestll.cpp: request.ll requestyy.hpp
-	reflex -o $@ $<
-
-requestyy.hpp: requestyy.cpp
-
-requestyy.cpp: request.yy
-	${BISON} -o $@ $<
-
 clean-local:
-	rm -f *~ \
-	requestll.cpp \
-	requestll.hpp \
-	requestyy.cpp \
-	requestyy.hpp \
-	requestloc.hpp
+	rm -f *~
 
 #EOF
 

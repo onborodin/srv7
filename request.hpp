@@ -1,44 +1,33 @@
-/*
- *
- * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- *
- */
+//
+// request.hpp
+// ~~~~~~~~~~~
+//
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
 
-#ifndef REQUEST_HPP
-#define REQUEST_HPP
+#ifndef HTTP_SERVER3_REQUEST_HPP
+#define HTTP_SERVER3_REQUEST_HPP
 
 #include <string>
+#include <vector>
+#include "header.hpp"
 
-namespace srv6 {
+namespace http {
+namespace server3 {
 
-struct auth {
-    std::string method;
-    std::string key;
-};
-
+/// A request received from a client.
 struct request {
     std::string method;
     std::string uri;
-    std::string hostname;
-    int clen = 0;
-    srv6::auth auth;
+    int http_version_major;
+    int http_version_minor;
+    std::vector<header> headers;
 };
 
-} // namespace srv6
+} // namespace server3
+} // namespace http
 
-#endif
+#endif // HTTP_SERVER3_REQUEST_HPP

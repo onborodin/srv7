@@ -1,61 +1,69 @@
-/*
- *
- * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- *
- */
+//
+// server.hpp
+// ~~~~~~~~~~
+//
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
 
-#ifndef HTTP_SERVER_HPP
-#define HTTP_SERVER_HPP
-
-#include <string>
-
-#include "manager.hpp"
-#include "config.hpp"
-#include "connection.hpp"
+#ifndef HTTP_SERVER3_SERVER_HPP
+#define HTTP_SERVER3_SERVER_HPP
 
 #include <asio.hpp>
+#include <string>
+#include <vector>
+#include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
+#include "connection.hpp"
+#include "request_handler.hpp"
 
-namespace srv6 {
+namespace http {
+namespace server3 {
 
-class server {
-  private:
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-
-    std::shared_ptr<srv6::config> config;
-    std::shared_ptr<srv6::manager> manager;
-
-    void do_accept();
-    void do_await_stop();
-
+/// The top-level class of the HTTP server.
+class server
+    : private boost::noncopyable {
   public:
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
+    /// Construct the server to listen on the specified TCP address and port, and
+    /// serve up files from the given directory.
+    explicit server(const std::string& address, const std::string& port,
+        const std::string& doc_root, std::size_t thread_pool_size);
 
-    explicit server(
-        std::shared_ptr<srv6::config> config,
-        std::shared_ptr<srv6::manager> manager
-    );
+    /// Run the server's io_context loop.
     void run();
 
+  private:
+    /// Initiate an asynchronous accept operation.
+    void start_accept();
+
+    /// Handle completion of an asynchronous accept operation.
+    void handle_accept(const asio::error_code& e);
+
+    /// Handle a request to stop the server.
+    void handle_stop();
+
+    /// The number of threads that will call io_context::run().
+    std::size_t thread_pool_size_;
+
+    /// The io_context used to perform asynchronous operations.
+    asio::io_context io_context_;
+
+    /// The signal_set is used to register for process termination notifications.
+    asio::signal_set signals_;
+
+    /// Acceptor used to listen for incoming connections.
+    asio::ip::tcp::acceptor acceptor_;
+
+    /// The next connection to be accepted.
+    connection_ptr new_connection_;
+
+    /// The handler for all incoming requests.
+    request_handler request_handler_;
 };
 
-} // namespace srv6
+} // namespace server3
+} // namespace http
 
-#endif
+#endif // HTTP_SERVER3_SERVER_HPP

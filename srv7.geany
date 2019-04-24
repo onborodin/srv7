@@ -18,7 +18,7 @@ detect_indent_width=false
 indent_mode=2
 
 [project]
-name=srv6
+name=srv7
 base_path=./
 description=
 file_patterns=
@@ -29,9 +29,9 @@ long_line_column=72
 
 [files]
 current_page=2
-FILE_NAME_0=2879;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fdispatcher.cpp;0;4
-FILE_NAME_1=1578;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fmain.cpp;0;4
-FILE_NAME_2=1018;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Frequest.ll;0;4
+FILE_NAME_0=2879;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fdispatcher.cpp;0;4
+FILE_NAME_1=1578;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fmain.cpp;0;4
+FILE_NAME_2=1018;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Frequest.ll;0;4
 
 [VTE]
 last_dir=/home/ziggi
@@ -53,7 +53,7 @@ C++FT_01_LB=_Build
 C++FT_01_CM=gmake
 C++FT_01_WD=
 EX_00_LB=_Execute
-EX_00_CM=./srv6
+EX_00_CM=./srv7
 EX_00_WD=
 C++FT_00_LB=_Compile
 C++FT_00_CM=gmake %e.o

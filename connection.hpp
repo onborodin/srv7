@@ -1,68 +1,77 @@
-/*
- *
- * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- *
- */
+//
+// connection.hpp
+// ~~~~~~~~~~~~~~
+//
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
 
-#ifndef CONNECTION_HPP
-#define CONNECTION_HPP
-
-#include <memory>
+#ifndef HTTP_SERVER3_CONNECTION_HPP
+#define HTTP_SERVER3_CONNECTION_HPP
 
 #include <asio.hpp>
-
+#include <boost/array.hpp>
+#include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include "reply.hpp"
 #include "request.hpp"
-#include "config.hpp"
+#include "request_handler.hpp"
+#include "request_parser.hpp"
 
-namespace srv6 {
+namespace http {
+namespace server3 {
 
-class manager;
-
-class connection : public std::enable_shared_from_this<connection> {
-  private:
-    asio::ip::tcp::socket socket;
-    //class manager& manager;
-    std::shared_ptr<srv6::manager> manager;
-    std::shared_ptr<srv6::config> config;
-
-    std::string buffer;
-    std::string raw_request_header;
-    srv6::request request;
-
-    std::string response;
-
-    void read();
-    void write();
-
+/// Represents a single connection from a client.
+class connection
+    : public boost::enable_shared_from_this<connection>,
+      private boost::noncopyable {
   public:
-    connection(const connection&) = delete;
-    connection& operator=(const connection&) = delete;
+    /// Construct a connection with the given io_context.
+    explicit connection(asio::io_context& io_context,
+        request_handler& handler);
 
-    explicit connection(
-        asio::ip::tcp::socket socket,
-        std::shared_ptr<srv6::manager> manager,
-        std::shared_ptr<srv6::config> config
-    );
+    /// Get the socket associated with the connection.
+    asio::ip::tcp::socket& socket();
 
+    /// Start the first asynchronous operation for the connection.
     void start();
-    void stop();
+
+  private:
+    /// Handle completion of a read operation.
+    void handle_read(const asio::error_code& e,
+        std::size_t bytes_transferred);
+
+    /// Handle completion of a write operation.
+    void handle_write(const asio::error_code& e);
+
+    /// Strand to ensure the connection's handlers are not called concurrently.
+    asio::io_context::strand strand_;
+
+    /// Socket for the connection.
+    asio::ip::tcp::socket socket_;
+
+    /// The handler used to process the incoming request.
+    request_handler& request_handler_;
+
+    /// Buffer for incoming data.
+    boost::array<char, 8192> buffer_;
+
+    /// The incoming request.
+    request request_;
+
+    /// The parser for the incoming request.
+    request_parser request_parser_;
+
+    /// The reply to be sent back to the client.
+    reply reply_;
 };
 
-} // namespace srv6
+typedef boost::shared_ptr<connection> connection_ptr;
 
-#endif
+} // namespace server3
+} // namespace http
+
+#endif // HTTP_SERVER3_CONNECTION_HPP

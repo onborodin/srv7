@@ -1,92 +1,83 @@
-/*
- *
- * Copyright 2019 Oleg Borodin  <borodin@unix7.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA 02110-1301, USA.
- *
- */
-
-
-#include <utility>
-#include <signal.h>
+//
+// server.cpp
+// ~~~~~~~~~~
+//
+// Copyright (c) 2003-2018 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+//
+// Distributed under the Boost Software License, Version 1.0. (See accompanying
+// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
 
 #include "server.hpp"
+#include <boost/bind.hpp>
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
-namespace srv6 {
+namespace http {
+namespace server3 {
 
-server::server(std::shared_ptr<srv6::config> config, std::shared_ptr<srv6::manager> manager) :
-    io_context(1),
-    signals(io_context),
-    acceptor(io_context),
-    config(config),
-    manager(manager)
-    {
-    // register to handle the signals that indicate when the server should exit.
+server::server(const std::string& address, const std::string& port,
+    const std::string& doc_root, std::size_t thread_pool_size)
+    : thread_pool_size_(thread_pool_size),
+      signals_(io_context_),
+      acceptor_(io_context_),
+      new_connection_(),
+      request_handler_(doc_root) {
+    // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
     // provided all registration for the specified signal is made through Asio.
-    signals.add(SIGINT);
-    signals.add(SIGTERM);
+    signals_.add(SIGINT);
+    signals_.add(SIGTERM);
+#if defined(SIGQUIT)
+    signals_.add(SIGQUIT);
+#endif // defined(SIGQUIT)
+    signals_.async_wait(boost::bind(&server::handle_stop, this));
 
-    #if defined(SIGQUIT)
-    signals.add(SIGQUIT);
-    #endif // defined(SIGQUIT)
+    // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
+    asio::ip::tcp::resolver resolver(io_context_);
+    asio::ip::tcp::endpoint endpoint =
+        *resolver.resolve(address, port).begin();
+    acceptor_.open(endpoint.protocol());
+    acceptor_.set_option(asio::ip::tcp::acceptor::reuse_address(true));
+    acceptor_.bind(endpoint);
+    acceptor_.listen(2048);
 
-    do_await_stop();
-
-    asio::ip::tcp::resolver resolver(io_context);
-    asio::ip::tcp::endpoint endpoint = *resolver.resolve(config->address, config->port).begin();
-
-    acceptor.open(endpoint.protocol());
-    acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-    acceptor.bind(endpoint);
-    acceptor.listen(config->backlogs);
-
-    do_accept();
+    start_accept();
 }
 
 void server::run() {
-    io_context.run();
+    // Create a pool of threads to run all of the io_contexts.
+    std::vector<boost::shared_ptr<asio::thread> > threads;
+    for (std::size_t i = 0; i < thread_pool_size_; ++i) {
+        boost::shared_ptr<asio::thread> thread(new asio::thread(
+                boost::bind(&asio::io_context::run, &io_context_)));
+        threads.push_back(thread);
+    }
+
+    // Wait for all threads in the pool to exit.
+    for (std::size_t i = 0; i < threads.size(); ++i) {
+        threads[i]->join();
+    }
 }
 
-void server::do_accept() {
-    auto func = [this](std::error_code ec, asio::ip::tcp::socket socket) {
-        // check whether the server was stopped by a signal before this
-        // completion handler had a chance to run.
-        if (!acceptor.is_open()) {
-            return;
-        }
-        if (!ec) {
-            manager->start(
-                std::make_shared<connection>(std::move(socket), manager, config)
-            );
-        }
-        do_accept();
-    };
-    acceptor.async_accept(func);
+void server::start_accept() {
+    new_connection_.reset(new connection(io_context_, request_handler_));
+    acceptor_.async_accept(new_connection_->socket(),
+        boost::bind(&server::handle_accept, this,
+            asio::placeholders::error));
 }
 
-void server::do_await_stop() {
-    signals.async_wait(
-    [this](std::error_code ec, int signo) {
-        // the server is stopped by cancelling all outstanding asynchronous
-        // operations. Once all operations have finished the io_context::run()
-        // call will exit.
-        acceptor.close();
-        manager->stop_all();
-    });
+void server::handle_accept(const asio::error_code& e) {
+    if (!e) {
+        new_connection_->start();
+    }
+
+    start_accept();
 }
 
-} // namespace srv6
+void server::handle_stop() {
+    io_context_.stop();
+}
+
+} // namespace server3
+} // namespace http
