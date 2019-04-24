@@ -25,48 +25,33 @@ namespace http {
 namespace server3 {
 
 /// Represents a single connection from a client.
-class connection
-    : public boost::enable_shared_from_this<connection>,
-      private boost::noncopyable {
+class connection : public std::enable_shared_from_this<connection> {
+
   public:
     /// Construct a connection with the given io_context.
-    explicit connection(asio::io_context& io_context,
-        request_handler& handler);
+    explicit connection(asio::io_context& io_context, request_handler& handler);
 
-    /// Get the socket associated with the connection.
-    asio::ip::tcp::socket& socket();
+    asio::ip::tcp::socket& get_socket();
 
-    /// Start the first asynchronous operation for the connection.
     void start();
+    void do_read();
+    void do_write();
+
+    connection(const connection&) = delete;
+    connection& operator=(const connection&) = delete;
 
   private:
-    /// Handle completion of a read operation.
-    void handle_read(const asio::error_code& e,
-        std::size_t bytes_transferred);
+    asio::io_context::strand strand;
+    asio::ip::tcp::socket socket;
 
-    /// Handle completion of a write operation.
-    void handle_write(const asio::error_code& e);
+    class request_handler& request_handler;
 
-    /// Strand to ensure the connection's handlers are not called concurrently.
-    asio::io_context::strand strand_;
+    boost::array<char, 8192> buffer;
 
-    /// Socket for the connection.
-    asio::ip::tcp::socket socket_;
+    class request request;
 
-    /// The handler used to process the incoming request.
-    request_handler& request_handler_;
-
-    /// Buffer for incoming data.
-    boost::array<char, 8192> buffer_;
-
-    /// The incoming request.
-    request request_;
-
-    /// The parser for the incoming request.
-    request_parser request_parser_;
-
-    /// The reply to be sent back to the client.
-    reply reply_;
+    request_parser request_parser;
+    reply reply;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

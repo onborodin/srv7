@@ -17,7 +17,7 @@
 namespace http {
 namespace server3 {
 
-struct request;
+class request;
 
 /// Parser for incoming requests.
 class request_parser {

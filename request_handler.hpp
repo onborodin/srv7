@@ -18,7 +18,7 @@ namespace http {
 namespace server3 {
 
 struct reply;
-struct request;
+class request;
 
 /// The common handler for all incoming requests.
 class request_handler
