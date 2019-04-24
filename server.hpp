@@ -25,11 +25,9 @@
 
 #include <string>
 #include <vector>
-
 #include <asio.hpp>
 
 #include "connection.hpp"
-#include "request_handler.hpp"
 
 namespace server3 {
 
@@ -41,14 +39,15 @@ class server {
     asio::ip::tcp::acceptor acceptor;
     std::shared_ptr<connection> new_connection;
 
-    request_handler request_handler;
-
-    void start_accept();
-    void handle_stop();
+    void accept();
+    void stop();
 
   public:
-    explicit server(const std::string& address, const std::string& port,
-        const std::string& doc_root, std::size_t thread_pool_size);
+    explicit server(
+        const std::string& address,
+        const std::string& port,
+        std::size_t thread_pool_size
+    );
 
     void run();
 

@@ -28,17 +28,17 @@
 
 #include <asio.hpp>
 
-#include "reply.hpp"
-#include "request.hpp"
-#include "request_handler.hpp"
-#include "request_parser.hpp"
+//#include "reply.hpp"
+//#include "request.hpp"
+//#include "request_handler.hpp"
+//#include "request_parser.hpp"
 
 namespace server3 {
 
 class connection : public std::enable_shared_from_this<connection> {
 
   public:
-    explicit connection(asio::io_context& io_context, request_handler& handler);
+    explicit connection(asio::io_context& io_context);
 
     asio::ip::tcp::socket& get_socket();
 
@@ -52,15 +52,17 @@ class connection : public std::enable_shared_from_this<connection> {
   private:
     asio::io_context::strand strand;
     asio::ip::tcp::socket socket;
+    std::string response;
+    std::string buffer;
 
-    class request_handler& request_handler;
+    //class request_handler& request_handler;
 
-    std::array<char, 8192> buffer;
+    //std::array<char, 8192> buffer;
 
-    class request request;
+    //class request request;
 
-    request_parser request_parser;
-    reply reply;
+    //request_parser request_parser;
+    //reply reply;
 };
 
 } // namespace server3

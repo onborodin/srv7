@@ -27,12 +27,10 @@
 
 int main(int argc, char* argv[]) {
     try {
-
-        server3::server s("0.0.0.0", "1026", "./public/", 5);
-        s.run();
+        server3::server server("0.0.0.0", "1026", 5);
+        server.run();
     } catch (std::exception& e) {
         std::cerr << "exception: " << e.what() << "\n";
     }
-
     return 0;
 }

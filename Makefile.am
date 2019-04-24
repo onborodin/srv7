@@ -12,12 +12,8 @@ AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall
 bin_PROGRAMS = srv7
 
 srv7_SOURCES = \
-	connection.cpp \
 	main.cpp \
-	mime_types.cpp \
-	reply.cpp \
-	request_handler.cpp \
-	request_parser.cpp \
+	connection.cpp \
 	server.cpp
 
 clean-local:

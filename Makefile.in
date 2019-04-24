@@ -107,9 +107,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_srv7_OBJECTS = connection.$(OBJEXT) main.$(OBJEXT) \
-	mime_types.$(OBJEXT) reply.$(OBJEXT) request_handler.$(OBJEXT) \
-	request_parser.$(OBJEXT) server.$(OBJEXT)
+am_srv7_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT)
 srv7_OBJECTS = $(am_srv7_OBJECTS)
 srv7_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -288,12 +286,8 @@ ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
 AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
 srv7_SOURCES = \
-	connection.cpp \
 	main.cpp \
-	mime_types.cpp \
-	reply.cpp \
-	request_handler.cpp \
-	request_parser.cpp \
+	connection.cpp \
 	server.cpp
 
 all: autoconf.hpp
@@ -404,10 +398,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mime_types.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reply.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/request_handler.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/request_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server.Po@am__quote@
 
 .cpp.o:

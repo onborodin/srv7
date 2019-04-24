@@ -21,18 +21,19 @@
 
 
 #include <vector>
+#include <sstream>
+#include <filesystem>
+#include <utility>
+#include <iomanip>
+#include <chrono>
 
-#include "request_handler.hpp"
 #include "connection.hpp"
 
 namespace server3 {
 
-connection::connection(asio::io_context& io_context,
-    class request_handler& handler)
-    : strand(io_context),
-      socket(io_context),
-      request_handler(handler) {
-}
+connection::connection(asio::io_context& io_context)
+    : strand(io_context), socket(io_context)
+    {}
 
 asio::ip::tcp::socket& connection::get_socket() {
     return socket;
@@ -44,30 +45,44 @@ void connection::start() {
 
 void connection::do_read() {
     auto self(shared_from_this());
-
     auto handler = [this, self](std::error_code ec, std::size_t bytes_transferred) {
         if (!ec) {
-            boost::tribool result;
-            boost::tie(result, boost::tuples::ignore) = request_parser.parse(
-                request, buffer.data(), buffer.data() + bytes_transferred
-            );
-            if (result) {
-                request_handler.handle_request(request, reply);
-                do_write();
-            } else if (!result) {
-                reply = reply::stock_reply(reply::bad_request);
-                do_write();
-            } else {
-                do_read();
-            }
+            do_write();
+
         } else if (ec != asio::error::operation_aborted) {
-            ////connection_manager_.stop(shared_from_this());
+            socket.close();
         }
     };
-    socket.async_read_some(asio::buffer(buffer), handler);
+    std::string delimeter = "\r\n\r\n";
+    asio::async_read_until(socket, asio::dynamic_buffer(buffer), delimeter, handler);
+}
+
+std::string timestamp() {
+    std::stringstream ss;
+    std::time_t now = std::time(0);
+    ss << std::put_time(std::gmtime(&now), "%a, %d %b %Y %T %Z");
+    return ss.str();
 }
 
 void connection::do_write() {
+
+    std::stringstream content;
+    for (int i = 0; i < 100000; i++) {
+        content << "hello!\n";
+    }
+
+    std::stringstream header;
+    header << "HTTP/1.1 200 OK\r\n";
+    header << "Date: " << timestamp() << "\r\n";
+    header << "Server: Srv3/0.1\r\n";
+    header << "Content-Length: " << content.str().length() << "\r\n";
+    header << "Content-Type: text/plain\r\n";
+    header << "Connection: close\r\n";
+    header << "\r\n";
+
+    response += header.str();
+    response += content.str();
+
     auto self(shared_from_this());
     auto handler = [this, self](std::error_code ec, std::size_t) {
         if (!ec) {
@@ -75,10 +90,10 @@ void connection::do_write() {
             socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
         }
         if (ec != asio::error::operation_aborted) {
-            //connection_manager_.stop(shared_from_this());
+            socket.close();
         }
     };
-    asio::async_write(socket, reply.to_buffers(), asio::bind_executor(strand, handler));
+    asio::async_write(socket, asio::buffer(response), asio::bind_executor(strand, handler));
 }
 
 } // namespace server3
