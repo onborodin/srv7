@@ -19,41 +19,46 @@
  *
  */
 
-#ifndef HTTP_SERVER_HPP
-#define HTTP_SERVER_HPP
 
-#include <asio.hpp>
-#include <string>
+#include <iostream>
+#include <map>
 
-#include "connection.hpp"
-#include "manager.hpp"
-#include "config.hpp"
+#include "keymap.hpp"
 
 namespace srv6 {
 
-class server {
-  private:
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
+std::string keymap::tolower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){
+            return std::tolower(c);
+    });
+    return s;
+}
 
-    std::shared_ptr<srv6::config> config;
+void keymap::set(std::string key, std::string arg) {
+    key = tolower(key);
+    keymap.erase(key);
+    std::pair<std::string, std::string> pair = { key, arg };
+    keymap.insert(pair);
+}
 
-    manager manager;
+std::string keymap::get(std::string key) {
+    std::string res = "";
+    auto i = keymap.find(tolower(key));
+    if (i != keymap.end()) {
+        res += i->second;
+    }
+    return res;
+}
 
-    void do_accept();
-    void do_await_stop();
-
-  public:
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
-
-    //explicit server(const std::string& address, const std::string& port);
-    explicit server(std::shared_ptr<srv6::config> config);
-    void run();
-
-};
+std::string keymap::dump() {
+    std::string res = "";
+    for (auto& item: keymap) {
+        res += item.first;
+        res += ": ";
+        res += item.second;
+        res += "\r\n";
+    }
+    return res;
+}
 
 } // namespace srv6
-
-#endif

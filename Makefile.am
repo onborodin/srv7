@@ -4,7 +4,7 @@
 AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 
-LIBS = -L${LOCALBASE}/lib -pthread
+LIBS = -L${LOCALBASE}/lib -pthread -lreflex
 
 LOCALBASE = /usr/local
 AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall
@@ -15,10 +15,27 @@ srv6_SOURCES = \
 	manager.cpp \
 	connection.cpp \
 	main.cpp \
-	server.cpp
+	server.cpp \
+	requestll.cpp \
+	requestyy.cpp \
+	requestcc.cpp \
+	keymap.cpp
+
+requestll.cpp: request.ll requestyy.hpp
+	reflex -o $@ $<
+
+requestyy.hpp: requestyy.cpp
+
+requestyy.cpp: request.yy
+	${BISON} -o $@ $<
 
 clean-local:
-	rm -f *~
+	rm -f *~ \
+	requestll.cpp \
+	requestll.hpp \
+	requestyy.cpp \
+	requestyy.hpp \
+	requestloc.hpp
 
 
 #EOF

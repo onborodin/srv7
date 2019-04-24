@@ -25,10 +25,14 @@
 
 #include "server.hpp"
 
-namespace server {
+namespace srv6 {
 
-server::server(const std::string& address, const std::string& port)
-    : io_context(1), signals(io_context), acceptor(io_context), manager()
+server::server(std::shared_ptr<srv6::config> config)
+    : io_context(1),
+        signals(io_context),
+        acceptor(io_context),
+        config(config),
+        manager()
     {
     // Register to handle the signals that indicate when the server should exit.
     // It is safe to register for the same signal multiple times in a program,
@@ -42,7 +46,7 @@ server::server(const std::string& address, const std::string& port)
     do_await_stop();
 
     asio::ip::tcp::resolver resolver(io_context);
-    asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
+    asio::ip::tcp::endpoint endpoint = *resolver.resolve(config->address, config->port).begin();
 
     acceptor.open(endpoint.protocol());
     acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
@@ -57,8 +61,7 @@ void server::run() {
 }
 
 void server::do_accept() {
-    acceptor.async_accept(
-    [this](std::error_code ec, asio::ip::tcp::socket socket) {
+    auto func = [this](std::error_code ec, asio::ip::tcp::socket socket) {
         // Check whether the server was stopped by a signal before this
         // completion handler had a chance to run.
         if (!acceptor.is_open()) {
@@ -66,11 +69,12 @@ void server::do_accept() {
         }
         if (!ec) {
             manager.start(
-                std::make_shared<connection>(std::move(socket), manager)
+                std::make_shared<connection>(std::move(socket), manager, config)
             );
         }
         do_accept();
-    });
+    };
+    acceptor.async_accept(func);
 }
 
 void server::do_await_stop() {
@@ -84,4 +88,4 @@ void server::do_await_stop() {
     });
 }
 
-} // namespace server
+} // namespace srv6

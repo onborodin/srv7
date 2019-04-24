@@ -34,44 +34,10 @@
 
 #include "connection.hpp"
 #include "manager.hpp"
+#include "dispatcher.cpp"
+#include "config.hpp"
 
-namespace server {
-
-connection::connection(asio::ip::tcp::socket socket, class manager& manager)
-    : socket(std::move(socket)), manager(manager)
-    { }
-
-void connection::start() {
-    do_read();
-}
-
-void connection::stop() {
-    socket.close();
-}
-
-void connection::do_read() {
-    auto self(shared_from_this());
-
-    auto func = [this, self](std::error_code ec, std::size_t size) {
-        if (!ec) {
-
-            std::string header = buffer.substr(0, size - 4);
-            buffer.erase(0, size);
-            //std::cerr << header << std::endl;
-
-            do_write();
-        } else if (ec != asio::error::operation_aborted) {
-            manager.stop(shared_from_this());
-        }
-    };
-
-    std::string delimeter = "\r\n\r\n";
-    asio::async_read_until(socket, asio::dynamic_buffer(buffer), delimeter, func);
-
-    //std::string buffer;
-    //socket.async_read_some(asio::buffer(buffer), func);
-}
-
+namespace srv6 {
 
 std::string timestamp() {
     std::stringstream ss;
@@ -97,11 +63,50 @@ int readfile(std::string& name, std::string& content) {
     return -1;
 }
 
+connection::connection(
+        asio::ip::tcp::socket socket,
+        class manager& manager,
+        std::shared_ptr<srv6::config> config
+    ) :
+    socket(std::move(socket)),
+    manager(manager),
+    config(config)
+    { }
+
+void connection::start() {
+    do_read();
+}
+
+void connection::stop() {
+    socket.close();
+}
+
+void connection::do_read() {
+    auto self(shared_from_this());
+
+    auto func = [this, self](std::error_code ec, std::size_t size) {
+        if (!ec) {
+
+            raw_request_header = buffer.substr(0, size);
+            buffer.erase(0, size);
+
+            do_write();
+        } else if (ec != asio::error::operation_aborted) {
+            manager.stop(shared_from_this());
+        }
+    };
+
+    std::string delimeter = "\r\n\r\n";
+    asio::async_read_until(socket, asio::dynamic_buffer(buffer), delimeter, func);
+}
+
+
+
 void connection::do_write() {
     auto self(shared_from_this());
     auto func = [this, self](std::error_code ec, std::size_t) {
         if (!ec) {
-            // Initiate graceful connection closure.
+            // initiate graceful connection closure.
             asio::error_code ignored_ec;
             socket.shutdown(asio::ip::tcp::socket::shutdown_both,
                 ignored_ec);
@@ -111,33 +116,42 @@ void connection::do_write() {
         }
     };
 
-            std::string path = "./configure";
+    dispatcher dsp(config);
+    dsp.parse(raw_request_header);
+    dsp.handle(response);
 
-            std::string response;
-            std::string body;
+    //std::string path = "./configure";
 
-            std::stringstream header;
-            size_t size = 0;
-            if ((size = readfile(path, body)) > 0) {
-                header << "HTTP/1.1 200 OK\r\n";
-                header << "Content-Type: text/plain\r\n";
-            } else {
-                header << "HTTP/1.1 404 Not Found\r\n";
-                header << "Content-Type: text/plain\r\n";
-            }
+    //std::string body;
 
-            header << "Server: Srv2/0.1\r\n";
-            header << "Date: " << timestamp() << "\r\n";
-            //header << "Connection: close\r\n";
-            header << "Content-Length: " << size << "\r\n";
-            header << "\r\n";
+    //std::stringstream header;
+    //size_t size = 0;
 
-            response.append(header.str());
-            response.append(body);
+    //std::ifstream is(path.c_str(), std::ios::in | std::ios::binary);
+    //if (!is) {
+        //header << "HTTP/1.1 404 Not Found\r\n";
+        //header << "Content-Type: text/plain\r\n";
+    //} else {
+        //header << "HTTP/1.1 200 OK\r\n";
+        //header << "Content-Type: text/plain\r\n";
 
+        //char buf[512];
+        //while (is.read(buf, sizeof(buf)).gcount() > 0) {
+            //body.append(buf, is.gcount());
+        //}
+    //}
 
-    //asio::async_write(socket, reply.to_buffers(), func);
+    //header << "Server: Srv2/0.1\r\n";
+    //header << "Date: " << timestamp() << "\r\n";
+    //header << "Connection: close\r\n";
+    //header << "Content-Length: " << body.length() << "\r\n";
+    //header << "\r\n";
+    //header << "\r\n";
+
+    //response.append(header.str());
+    //response.append(body);
+
     asio::async_write(socket, asio::buffer(response), func);
 }
 
-} // namespace server
+} // namespace srv6

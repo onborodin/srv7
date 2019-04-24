@@ -19,50 +19,24 @@
  *
  */
 
-#ifndef CONNECTION_HPP
-#define CONNECTION_HPP
 
-#include <memory>
+#ifndef SERVCONF_HPP
+#define SERVCONF_HPP
 
-#include <asio.hpp>
-
-#include "request.hpp"
-#include "config.hpp"
+#include <string>
+#include "keymap.hpp"
 
 namespace srv6 {
 
-class manager;
-
-class connection : public std::enable_shared_from_this<connection> {
-  private:
-    asio::ip::tcp::socket socket;
-    class manager& manager;
-    std::shared_ptr<srv6::config> config;
-
-    std::string buffer;
-    std::string raw_request_header;
-    srv6::request request;
-
-    std::string response;
-
-    void do_read();
-    void do_write();
-
-  public:
-    connection(const connection&) = delete;
-    connection& operator=(const connection&) = delete;
-
-    explicit connection(
-        asio::ip::tcp::socket socket,
-        class manager& manager,
-        std::shared_ptr<srv6::config> config
-    );
-
-    void start();
-    void stop();
+class config {
+    public:
+        std::string basedir = "./";
+        std::string port = "1026";
+        std::string address = "0.0.0.0";
+        std::size_t threads = 10;
+        int max_listen_connections = 1024;
+        srv6::keymap filemap;
 };
-
-typedef std::shared_ptr<connection> connection_ptr;
 
 } // namespace srv6
 

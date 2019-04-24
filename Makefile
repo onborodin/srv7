@@ -108,7 +108,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_srv6_OBJECTS = manager.$(OBJEXT) connection.$(OBJEXT) \
-	main.$(OBJEXT) server.$(OBJEXT)
+	main.$(OBJEXT) server.$(OBJEXT) requestll.$(OBJEXT) \
+	requestyy.$(OBJEXT) requestcc.$(OBJEXT) keymap.$(OBJEXT)
 srv6_OBJECTS = $(am_srv6_OBJECTS)
 srv6_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -218,7 +219,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -L${LOCALBASE}/lib -pthread
+LIBS = -L${LOCALBASE}/lib -pthread -lreflex
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/ziggi/srv6/missing makeinfo
 MKDIR_P = /usr/local/bin/gmkdir -p
@@ -290,7 +291,11 @@ srv6_SOURCES = \
 	manager.cpp \
 	connection.cpp \
 	main.cpp \
-	server.cpp
+	server.cpp \
+	requestll.cpp \
+	requestyy.cpp \
+	requestcc.cpp \
+	keymap.cpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -399,8 +404,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/connection.Po
+include ./$(DEPDIR)/keymap.Po
 include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/manager.Po
+include ./$(DEPDIR)/requestcc.Po
+include ./$(DEPDIR)/requestll.Po
+include ./$(DEPDIR)/requestyy.Po
 include ./$(DEPDIR)/server.Po
 
 .cpp.o:
@@ -770,8 +779,21 @@ uninstall-am: uninstall-binPROGRAMS
 .PRECIOUS: Makefile
 
 
+requestll.cpp: request.ll requestyy.hpp
+	reflex -o $@ $<
+
+requestyy.hpp: requestyy.cpp
+
+requestyy.cpp: request.yy
+	${BISON} -o $@ $<
+
 clean-local:
-	rm -f *~
+	rm -f *~ \
+	requestll.cpp \
+	requestll.hpp \
+	requestyy.cpp \
+	requestyy.hpp \
+	requestloc.hpp
 
 #EOF
 

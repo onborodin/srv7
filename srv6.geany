@@ -28,14 +28,11 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
-FILE_NAME_0=1088;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fconnection.hpp;0;4
-FILE_NAME_1=3032;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fconnection.cpp;0;4
-FILE_NAME_2=3579;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fdispatcher.cpp;0;4
-FILE_NAME_3=1400;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fmain.cpp;0;4
-FILE_NAME_4=874;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fconfig.hpp;0;4
-FILE_NAME_5=883;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fkeymap.hpp;0;4
-FILE_NAME_6=1300;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fkeymap.cpp;0;4
+current_page=0
+FILE_NAME_0=912;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fconnection.hpp;0;4
+FILE_NAME_1=1110;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fconnection.cpp;0;4
+FILE_NAME_2=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fmain.cpp;0;4
+FILE_NAME_3=2074;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv6%2Fserver.cpp;0;4
 
 [VTE]
 last_dir=/home/ziggi
@@ -44,7 +41,7 @@ last_dir=/home/ziggi
 source_patterns=*.c;*.C;*.cpp;*.cxx;*.c++;*.cc;*.m;Makefile;*.l;*.y;*.in;*.m4;*.sh;
 header_patterns=*.h;*.H;*.hpp;*.hxx;*.h++;*.hh;
 ignored_dirs_patterns=.*;CVS;*~;
-ignored_file_patterns=*.o;*.obj;*.a;*.lib;*.so;*.dll;*.lo;*.la;*.class;*.jar;*.pyc;*.mo;*.gmo;
+ignored_file_patterns=*~;*.o;*.obj;*.a;*.lib;*.so;*.dll;*.lo;*.la;*.class;*.jar;*.pyc;*.mo;*.gmo;
 generate_tag_prefs=0
 external_dirs=
 

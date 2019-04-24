@@ -6,7 +6,7 @@
 
 #include "connection.hpp"
 
-namespace server {
+namespace srv6 {
 
 class manager {
     private:
@@ -21,6 +21,6 @@ class manager {
         void stop_all();
 };
 
-} // namespace server
+} // namespace srv6
 
 #endif
