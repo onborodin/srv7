@@ -27,7 +27,7 @@
 
 int main(int argc, char* argv[]) {
     try {
-        server3::server server("0.0.0.0", "1026", 5);
+        srv7::server server("0.0.0.0", "1026", 5);
         server.run();
     } catch (std::exception& e) {
         std::cerr << "exception: " << e.what() << "\n";

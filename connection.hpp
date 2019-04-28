@@ -20,51 +20,47 @@
  */
 
 
-#ifndef HTTP_SERVER3_CONNECTION_HPP
-#define HTTP_SERVER3_CONNECTION_HPP
+#ifndef SRV7_CONNECTION_HPP
+#define SRV7_CONNECTION_HPP
 
 #include <memory>
 #include <array>
 
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 
-//#include "reply.hpp"
-//#include "request.hpp"
-//#include "request_handler.hpp"
-//#include "request_parser.hpp"
+namespace srv7 {
 
-namespace server3 {
 
 class connection : public std::enable_shared_from_this<connection> {
+  private:
+    asio::io_context::strand strand;
+    asio::ip::tcp::socket socket;
+    asio::ssl::context& ssl_context;
 
+    asio::ssl::stream<asio::ip::tcp::socket> *ssl_socket;
+
+    std::string response;
+    std::string buffer;
+
+    void handshake();
+    void read();
+    void write();
   public:
-    explicit connection(asio::io_context& io_context);
+    explicit connection(
+        asio::ssl::context& ssl_context,
+        asio::io_context& io_context
+    );
+    connection(const connection&) = delete;
+    connection& operator=(const connection&) = delete;
 
     asio::ip::tcp::socket& get_socket();
 
     void start();
-    void do_read();
-    void do_write();
-
-    connection(const connection&) = delete;
-    connection& operator=(const connection&) = delete;
-
-  private:
-    asio::io_context::strand strand;
-    asio::ip::tcp::socket socket;
-    std::string response;
-    std::string buffer;
-
-    //class request_handler& request_handler;
-
-    //std::array<char, 8192> buffer;
-
-    //class request request;
-
-    //request_parser request_parser;
-    //reply reply;
+    void stop();
+    ~connection();
 };
 
-} // namespace server3
+} // namespace srv7
 
-#endif // HTTP_SERVER3_CONNECTION_HPP
+#endif // SRV7_CONNECTION_HPP

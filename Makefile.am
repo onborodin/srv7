@@ -4,7 +4,7 @@
 AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 
-LIBS = -L${LOCALBASE}/lib -pthread
+LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto
 
 LOCALBASE = /usr/local
 AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall

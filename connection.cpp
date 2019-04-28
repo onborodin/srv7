@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <vector>
 #include <sstream>
 #include <filesystem>
@@ -27,34 +26,55 @@
 #include <iomanip>
 #include <chrono>
 
+#include <asio.hpp>
+#include <asio/ssl.hpp>
+
 #include "connection.hpp"
 
-namespace server3 {
+namespace srv7 {
 
-connection::connection(asio::io_context& io_context)
-    : strand(io_context), socket(io_context)
-    {}
+connection::connection(asio::ssl::context& ssl_context, asio::io_context& io_context)
+    : strand(io_context), socket(io_context), ssl_context(ssl_context) {}
 
 asio::ip::tcp::socket& connection::get_socket() {
     return socket;
 }
 
 void connection::start() {
-  do_read();
+    ssl_socket = new asio::ssl::stream<asio::ip::tcp::socket>(
+        std::move(socket),
+        ssl_context
+    );
+    handshake();
 }
 
-void connection::do_read() {
-    auto self(shared_from_this());
-    auto handler = [this, self](std::error_code ec, std::size_t bytes_transferred) {
-        if (!ec) {
-            do_write();
+void connection::handshake() {
+        auto self(shared_from_this());
+        ssl_socket->async_handshake(asio::ssl::stream_base::server,
+        [this, self](const std::error_code& error) {
+            if (!error) {
+                this->read();
+            } else {
+                this->stop();
+            }
+        });
+}
 
+void connection::read() {
+    auto self(shared_from_this());
+    auto handler = [this, self](std::error_code ec, std::size_t size) {
+        if (!ec) {
+            this->write();
         } else if (ec != asio::error::operation_aborted) {
-            socket.close();
+            this->stop();
         }
     };
     std::string delimeter = "\r\n\r\n";
-    asio::async_read_until(socket, asio::dynamic_buffer(buffer), delimeter, handler);
+    asio::async_read_until(
+        *ssl_socket, asio::dynamic_buffer(buffer),
+        delimeter,
+        handler
+    );
 }
 
 std::string timestamp() {
@@ -64,11 +84,11 @@ std::string timestamp() {
     return ss.str();
 }
 
-void connection::do_write() {
+void connection::write() {
 
     std::stringstream content;
-    for (int i = 0; i < 100000; i++) {
-        content << "hello!\n";
+    for (int i = 0; i < 10000; i++) {
+        content << "hello!";
     }
 
     std::stringstream header;
@@ -86,14 +106,25 @@ void connection::do_write() {
     auto self(shared_from_this());
     auto handler = [this, self](std::error_code ec, std::size_t) {
         if (!ec) {
-            asio::error_code ignored_ec;
-            socket.shutdown(asio::ip::tcp::socket::shutdown_both, ignored_ec);
+            this->stop();
         }
         if (ec != asio::error::operation_aborted) {
-            socket.close();
+            this->stop();
         }
     };
-    asio::async_write(socket, asio::buffer(response), asio::bind_executor(strand, handler));
+    asio::async_write(
+        *ssl_socket, asio::buffer(response),
+        asio::bind_executor(strand, handler)
+    );
 }
 
-} // namespace server3
+void connection::stop() {
+    asio::error_code ignored_ec;
+    ssl_socket->shutdown(ignored_ec);
+}
+
+connection::~connection() {
+    delete ssl_socket;
+}
+
+} // namespace srv7

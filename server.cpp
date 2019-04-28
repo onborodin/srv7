@@ -19,17 +19,23 @@
  *
  */
 
-#include "server.hpp"
+#include <iostream>
 #include <vector>
 #include <memory>
 
-namespace server3 {
+#include <asio.hpp>
+#include <asio/ssl.hpp>
+
+#include "server.hpp"
+
+namespace srv7 {
 
 server::server(const std::string& address, const std::string& port, std::size_t thread_pool_size)
     : thread_pool_size(thread_pool_size),
       signals(io_context),
       acceptor(io_context),
-      new_connection()
+      ssl_context(asio::ssl::context::sslv23),
+      connection()
     {
 
     signals.add(SIGINT);
@@ -41,6 +47,14 @@ server::server(const std::string& address, const std::string& port, std::size_t 
 
     signals.async_wait(signal_handler);
 
+    ssl_context.set_options(
+        asio::ssl::context::default_workarounds
+        | asio::ssl::context::no_sslv2
+        | asio::ssl::context::single_dh_use
+    );
+    ssl_context.use_certificate_chain_file("server.pem");
+    ssl_context.use_private_key_file("server.pem", asio::ssl::context::pem);
+
     asio::ip::tcp::resolver resolver(io_context);
     asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
 
@@ -48,18 +62,17 @@ server::server(const std::string& address, const std::string& port, std::size_t 
     acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
     acceptor.bind(endpoint);
     acceptor.listen(2048);
-    accept();
+
+    this->accept();
 }
 
 void server::run() {
     std::vector<std::shared_ptr<asio::thread>> threads;
     for (std::size_t i = 0; i < thread_pool_size; ++i) {
-        //std::shared_ptr<asio::thread> thread(
-            //new asio::thread(
-                //boost::bind(&asio::io_context::run, &io_context))
-        //);
+
         auto f = [this]{ io_context.run(); };
         auto t = new asio::thread(std::move(f));
+
         std::shared_ptr<asio::thread> thread(std::move(t));
         threads.push_back(thread);
     }
@@ -69,18 +82,18 @@ void server::run() {
 }
 
 void server::accept() {
-    new_connection.reset(new connection(io_context));
+    connection.reset(new class connection(ssl_context, io_context));
     auto handler = [this](const asio::error_code& ec) {
         if (!ec) {
-            new_connection->start();
+            connection->start();
         }
-        accept();
+        this->accept();
     };
-    acceptor.async_accept(new_connection->get_socket(), handler);
+    acceptor.async_accept(connection->get_socket(), handler);
 }
 
 void server::stop() {
     io_context.stop();
 }
 
-} // namespace server3
+} // namespace srv7

@@ -20,16 +20,18 @@
  */
 
 
-#ifndef HTTP_SERVER3_SERVER_HPP
-#define HTTP_SERVER3_SERVER_HPP
+#ifndef SRV7_SERVER_HPP
+#define SRV7_SERVER_HPP
 
 #include <string>
 #include <vector>
+
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 
 #include "connection.hpp"
 
-namespace server3 {
+namespace srv7 {
 
 class server {
   private:
@@ -37,7 +39,9 @@ class server {
     asio::io_context io_context;
     asio::signal_set signals;
     asio::ip::tcp::acceptor acceptor;
-    std::shared_ptr<connection> new_connection;
+    asio::ssl::context ssl_context;
+
+    std::shared_ptr<connection> connection;
 
     void accept();
     void stop();
@@ -56,6 +60,6 @@ class server {
 
 };
 
-} // namespace server3
+} // namespace srv7
 
-#endif // HTTP_SERVER3_SERVER_HPP
+#endif // SRV7_SERVER_HPP
