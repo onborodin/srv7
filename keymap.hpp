@@ -19,47 +19,24 @@
  *
  */
 
+#ifndef KEYMAP_HPP
+#define KEYMAP_HPP
 
-#ifndef SERVER_SERVER_HPP
-#define SERVER_SERVER_HPP
-
-#include <string>
-#include <vector>
-
-#include <asio.hpp>
-#include <asio/ssl.hpp>
-
-#include "connection.hpp"
+#include <iostream>
+#include <map>
 
 namespace server {
 
-class server {
-  private:
-    std::size_t thread_pool_size;
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
-
-    std::shared_ptr<connection> connection;
-
-    void accept();
-    void stop();
-
-  public:
-    explicit server(
-        const std::string& address,
-        const std::string& port,
-        std::size_t thread_pool_size
-    );
-
-    void run();
-
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
-
+class keymap {
+    private:
+        std::map<std::string, std::string> keymap;
+        std::string tolower(std::string s);
+    public:
+        void set(std::string key, std::string arg);
+        std::string get(std::string key);
+        std::string dump();
 };
 
 } // namespace server
 
-#endif // SERVER_SERVER_HPP
+#endif

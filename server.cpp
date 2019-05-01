@@ -28,7 +28,7 @@
 
 #include "server.hpp"
 
-namespace srv7 {
+namespace server {
 
 server::server(const std::string& address, const std::string& port, std::size_t thread_pool_size)
     : thread_pool_size(thread_pool_size),
@@ -96,4 +96,4 @@ void server::stop() {
     io_context.stop();
 }
 
-} // namespace srv7
+} // namespace server

@@ -20,46 +20,45 @@
  */
 
 
-#ifndef SERVER_SERVER_HPP
-#define SERVER_SERVER_HPP
+#include <iostream>
+#include <map>
 
-#include <string>
-#include <vector>
-
-#include <asio.hpp>
-#include <asio/ssl.hpp>
-
-#include "connection.hpp"
+#include "keymap.hpp"
 
 namespace server {
 
-class server {
-  private:
-    std::size_t thread_pool_size;
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
+std::string keymap::tolower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){
+            return std::tolower(c);
+    });
+    return s;
+}
 
-    std::shared_ptr<connection> connection;
+void keymap::set(std::string key, std::string arg) {
+    key = tolower(key);
+    keymap.erase(key);
+    std::pair<std::string, std::string> pair = { key, arg };
+    keymap.insert(pair);
+}
 
-    void accept();
-    void stop();
+std::string keymap::get(std::string key) {
+    std::string res = "";
+    auto i = keymap.find(tolower(key));
+    if (i != keymap.end()) {
+        res += i->second;
+    }
+    return res;
+}
 
-  public:
-    explicit server(
-        const std::string& address,
-        const std::string& port,
-        std::size_t thread_pool_size
-    );
-
-    void run();
-
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
-
-};
+std::string keymap::dump() {
+    std::string res = "";
+    for (auto& item: keymap) {
+        res += item.first;
+        res += ": ";
+        res += item.second;
+        res += "\r\n";
+    }
+    return res;
+}
 
 } // namespace server
-
-#endif // SERVER_SERVER_HPP

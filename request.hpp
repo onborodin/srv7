@@ -19,47 +19,42 @@
  *
  */
 
+#ifndef HTTP_REQUEST_HPP
+#define HTTP_REQUEST_HPP
 
-#ifndef SERVER_SERVER_HPP
-#define SERVER_SERVER_HPP
-
+#include <iostream>
 #include <string>
+#include <map>
+#include <unordered_map>
+#include <sstream>
 #include <vector>
+#include <regex>
 
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+namespace http {
+namespace request {
 
-#include "connection.hpp"
+class header {
+    private:
+        std::map<std::string, std::string> map;
 
-namespace server {
+        std::string _method;
+        std::string _resource;
+        std::string _version;
+    public:
+        enum class type { get, post, head, unknown };
 
-class server {
-  private:
-    std::size_t thread_pool_size;
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
-
-    std::shared_ptr<connection> connection;
-
-    void accept();
-    void stop();
-
-  public:
-    explicit server(
-        const std::string& address,
-        const std::string& port,
-        std::size_t thread_pool_size
-    );
-
-    void run();
-
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
-
+        header(std::string& source);
+        type method();
+        std::string resource();
+        std::unordered_map<std::string, std::string> args();
+        int content_length();
+        bool accept_encoding(std::string enc);
+        std::vector<std::string> accept_encoding();
+        std::vector<std::string> authorization();
+        std::string str();
 };
 
-} // namespace server
+} // namespace http
+} // namespace request
 
-#endif // SERVER_SERVER_HPP
+#endif

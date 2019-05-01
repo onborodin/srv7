@@ -18,48 +18,30 @@
  * MA 02110-1301, USA.
  *
  */
+#ifndef REQUESTCC_HPP
+#define REQUESTCC_HPP
 
+namespace srv6 {
 
-#ifndef SERVER_SERVER_HPP
-#define SERVER_SERVER_HPP
+struct request {
+    struct auth {
+        std::string method;
+        std::string key;
+    };
 
-#include <string>
-#include <vector>
-
-#include <asio.hpp>
-#include <asio/ssl.hpp>
-
-#include "connection.hpp"
-
-namespace server {
-
-class server {
-  private:
-    std::size_t thread_pool_size;
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
-
-    std::shared_ptr<connection> connection;
-
-    void accept();
-    void stop();
-
-  public:
-    explicit server(
-        const std::string& address,
-        const std::string& port,
-        std::size_t thread_pool_size
-    );
-
-    void run();
-
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
-
+    std::string method;
+    std::string uri;
+    std::string hostname;
+    int clen = 0;
+    auth auth;
 };
 
-} // namespace server
+} // namespace srv6
 
-#endif // SERVER_SERVER_HPP
+namespace requestcc {
+
+void compiler(const std::string& raw, srv6::request& request);
+
+} // namespace requestcc
+
+#endif

@@ -20,8 +20,8 @@
  */
 
 
-#ifndef SRV7_CONNECTION_HPP
-#define SRV7_CONNECTION_HPP
+#ifndef SERVER_CONNECTION_HPP
+#define SERVER_CONNECTION_HPP
 
 #include <memory>
 #include <array>
@@ -29,7 +29,7 @@
 #include <asio.hpp>
 #include <asio/ssl.hpp>
 
-namespace srv7 {
+namespace server {
 
 
 class connection : public std::enable_shared_from_this<connection> {
@@ -41,11 +41,12 @@ class connection : public std::enable_shared_from_this<connection> {
     asio::ssl::stream<asio::ip::tcp::socket> *ssl_socket;
 
     std::string response;
-    std::string buffer;
+    std::string request;
 
     void handshake();
     void read();
     void write();
+
   public:
     explicit connection(
         asio::ssl::context& ssl_context,
@@ -61,6 +62,6 @@ class connection : public std::enable_shared_from_this<connection> {
     ~connection();
 };
 
-} // namespace srv7
+} // namespace server
 
-#endif // SRV7_CONNECTION_HPP
+#endif // SERVER_CONNECTION_HPP

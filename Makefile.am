@@ -9,12 +9,15 @@ LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto
 LOCALBASE = /usr/local
 AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall
 
-bin_PROGRAMS = srv7
+bin_PROGRAMS = srv
 
-srv7_SOURCES = \
+srv_SOURCES = \
 	main.cpp \
 	connection.cpp \
-	server.cpp
+	server.cpp \
+	keymap.cpp \
+	request.cpp \
+	utils.cpp
 
 clean-local:
 	rm -f *~

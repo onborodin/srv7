@@ -28,11 +28,15 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=3
-FILE_NAME_0=1098;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fserver.hpp;0;4
-FILE_NAME_1=2190;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fserver.cpp;0;4
-FILE_NAME_2=1675;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.hpp;0;4
-FILE_NAME_3=2837;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.cpp;0;4
+current_page=7
+FILE_NAME_0=917;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fmain.cpp;0;4
+FILE_NAME_1=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fserver.hpp;0;4
+FILE_NAME_2=4745;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.cpp;0;4
+FILE_NAME_3=1226;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.hpp;0;4
+FILE_NAME_4=3846;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Frequest.cpp;0;4
+FILE_NAME_5=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Frequest.hpp;0;4
+FILE_NAME_6=220;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Futils.hpp;0;4
+FILE_NAME_7=693;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Futils.cpp;0;4
 
 [VTE]
 last_dir=/home/ziggi
@@ -54,7 +58,7 @@ C++FT_01_LB=_Build
 C++FT_01_CM=gmake
 C++FT_01_WD=
 EX_00_LB=_Execute
-EX_00_CM=./srv7
+EX_00_CM=./srv
 EX_00_WD=
 C++FT_00_LB=_Compile
 C++FT_00_CM=gmake %e.o

@@ -19,47 +19,31 @@
  *
  */
 
+#include <iostream>
+#include <sstream>
 
-#ifndef SERVER_SERVER_HPP
-#define SERVER_SERVER_HPP
+#include "requestyy.hpp"
+#include "requestll.hpp"
+#include "requestcc.hpp"
 
-#include <string>
-#include <vector>
+namespace requestcc {
 
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+void compiler(const std::string& buffer, srv6::request& request) {
 
-#include "connection.hpp"
+    std::stringstream out;
+    std::stringstream in;
+    in << buffer;
 
-namespace server {
+    std::cerr << in.str() << std::endl;
+    std::cerr << std::endl;
 
-class server {
-  private:
-    std::size_t thread_pool_size;
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
+    requestcc::lexer l(buffer, out);
+    requestcc::parser parser(l, request);
+    parser();
 
-    std::shared_ptr<connection> connection;
 
-    void accept();
-    void stop();
+    //std::cerr << out.str() << std::endl;
+    //std::cerr << std::endl;
+}
 
-  public:
-    explicit server(
-        const std::string& address,
-        const std::string& port,
-        std::size_t thread_pool_size
-    );
-
-    void run();
-
-    server(const server&) = delete;
-    server& operator=(const server&) = delete;
-
-};
-
-} // namespace server
-
-#endif // SERVER_SERVER_HPP
+} // namespace requestcc

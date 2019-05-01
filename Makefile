@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = srv7$(EXEEXT)
+bin_PROGRAMS = srv$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
@@ -107,9 +107,10 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_srv7_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT)
-srv7_OBJECTS = $(am_srv7_OBJECTS)
-srv7_LDADD = $(LDADD)
+am_srv_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT) \
+	keymap.$(OBJEXT) request.$(OBJEXT) utils.$(OBJEXT)
+srv_OBJECTS = $(am_srv_OBJECTS)
+srv_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -139,8 +140,8 @@ AM_V_CXXLD = $(am__v_CXXLD_$(V))
 am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(srv7_SOURCES)
-DIST_SOURCES = $(srv7_SOURCES)
+SOURCES = $(srv_SOURCES)
+DIST_SOURCES = $(srv_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -285,10 +286,13 @@ AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
 AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
-srv7_SOURCES = \
+srv_SOURCES = \
 	main.cpp \
 	connection.cpp \
-	server.cpp
+	server.cpp \
+	keymap.cpp \
+	request.cpp \
+	utils.cpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -386,9 +390,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-srv7$(EXEEXT): $(srv7_OBJECTS) $(srv7_DEPENDENCIES) $(EXTRA_srv7_DEPENDENCIES) 
-	@rm -f srv7$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(srv7_OBJECTS) $(srv7_LDADD) $(LIBS)
+srv$(EXEEXT): $(srv_OBJECTS) $(srv_DEPENDENCIES) $(EXTRA_srv_DEPENDENCIES) 
+	@rm -f srv$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(srv_OBJECTS) $(srv_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -397,8 +401,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/connection.Po
+include ./$(DEPDIR)/keymap.Po
 include ./$(DEPDIR)/main.Po
+include ./$(DEPDIR)/request.Po
 include ./$(DEPDIR)/server.Po
+include ./$(DEPDIR)/utils.Po
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
