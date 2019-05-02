@@ -19,35 +19,43 @@
  *
  */
 
+#ifndef SRV_LOGGER_HPP
+#define SRV_LOGGER_HPP
 
-#ifndef SERVER_CONFIG_HPP
-#define SERVER_CONFIG_HPP
-
-#include <string>
-#include "keymap.hpp"
-#include "logger.hpp"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <functional>
+#include <condition_variable>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <chrono>
+#include <memory>
+#include <stdexcept>
+#include <iomanip>
 
 namespace srv {
 
-class config {
-    public:
-        std::string port;
-        std::string address;
-        std::string keyfile;
-        std::string crtfile;
-        std::string pubdir;
-        std::string index;
-        int poolsize;
-        int backlog;
-};
+class logger {
+    private:
+        class message {
+            public:
+                std::string content;
+                message(std::string msg) : content(msg) {}
+        };
+        std::queue<message> queue;
+        std::condition_variable cv;
+        std::mutex mutex;
+        std::vector<std::shared_ptr<std::thread>> threads;
+        std::string path;
+        std::shared_ptr<std::ofstream> file;
 
-class ptrbox {
+        std::string timestamp();
     public:
-        std::shared_ptr<::srv::keymap> filemap;
-        std::shared_ptr<::srv::config> config;
-        std::shared_ptr<::srv::logger> logger;
+        logger(std::string path, int num_threads = 1);
+        void log(std::string msg);
 };
 
 } // namespace srv
-
 #endif

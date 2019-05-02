@@ -108,7 +108,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_srv_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT) \
-	keymap.$(OBJEXT) request.$(OBJEXT) utils.$(OBJEXT)
+	keymap.$(OBJEXT) request.$(OBJEXT) utils.$(OBJEXT) \
+	logger.$(OBJEXT)
 srv_OBJECTS = $(am_srv_OBJECTS)
 srv_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -292,7 +293,8 @@ srv_SOURCES = \
 	server.cpp \
 	keymap.cpp \
 	request.cpp \
-	utils.cpp
+	utils.cpp \
+	logger.cpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -402,6 +404,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/connection.Po
 include ./$(DEPDIR)/keymap.Po
+include ./$(DEPDIR)/logger.Po
 include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/request.Po
 include ./$(DEPDIR)/server.Po

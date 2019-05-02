@@ -21,6 +21,7 @@
 
 
 #include <iostream>
+#include <filesystem>
 
 #include "request.hpp"
 #include "utils.hpp"
@@ -30,29 +31,43 @@ namespace srv {
 class handler {
     private:
         http::request::header request_header;
-
+        std::shared_ptr<srv::ptrbox> ptrbox;
 
     public:
-        handler(std::string& request_header)
-        : request_header(request_header) {}
+        handler(std::string& request_header, std::shared_ptr<srv::ptrbox> ptrbox)
+        : request_header(request_header), ptrbox(ptrbox) {}
 
         void run(std::string& response_header, std::string& response_content) {
-            srv::keymap filemap;
-            filemap.set("html", "text/html");
-            filemap.set("js", "application/javascript");
-            filemap.set("json", "application/json");
-            filemap.set("jpg", "image/jpeg");
-            filemap.set("png", "image/png");
-            filemap.set("css", "text/css");
-            filemap.set("cpp", "text/plain");
+            //srv::keymap filemap;
+            //filemap.set("html", "text/html");
+            //filemap.set("js", "application/javascript");
+            //filemap.set("json", "application/json");
+            //filemap.set("jpg", "image/jpeg");
+            //filemap.set("png", "image/png");
+            //filemap.set("css", "text/css");
+            //filemap.set("cpp", "text/plain");
 
-           std::string resource = request_header.resource();
-            if (resource == "/") resource = "/index.html";
-            std::string path = "./public/" + resource;
+            auto config = ptrbox->config;
+            auto logger = ptrbox->logger;
+
+            std::string resource = request_header.resource();
+            if (resource == "/") resource = "/" + config->index;
+            std::string path = config->pubdir + "/" + resource;
+
+            std::filesystem::path cpath;
+            try {
+                cpath = std::filesystem::canonical(std::filesystem::path(path));
+            } catch (std::exception& e) {
+                std::cerr << "exception: " << e.what() << "\n";
+                cpath = std::filesystem::path(path);
+            }
+
+            logger->log(cpath.string());
+            //std::cout << cpath.string() << std::endl;
 
             int size = 0;
             response_content.clear();
-            std::ifstream is(path, std::ios::binary | std::ios::in);
+            std::ifstream is(cpath.string(), std::ios::binary | std::ios::in);
 
             if (is) {
                 //is.seekg(0, std::ios::end);
@@ -70,7 +85,7 @@ class handler {
             if (ext == path) ext = "";
 
             if (ext.length() > 0) {
-                mime = filemap.get(ext);
+                mime = ptrbox->filemap->get(ext);
             }
             if (mime.length() == 0) {
                 mime = "application/octet-stream";

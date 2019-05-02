@@ -92,7 +92,7 @@ void connection::read() {
 
 void connection::write() {
 
-    srv::handler handler(request);
+    srv::handler handler(request, ptrbox);
     std::string response_header;
     std::string response_content;
     handler.run(response_header, response_content);

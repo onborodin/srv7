@@ -25,6 +25,8 @@
 
 #include <asio.hpp>
 
+#include "logger.hpp"
+#include "keymap.hpp"
 #include "server.hpp"
 #include "config.hpp"
 
@@ -53,10 +55,13 @@ int main(int argc, char* argv[]) {
         filemap->set("css", "text/css");
         filemap->set("cpp", "text/plain");
 
+        auto logger = std::make_shared<srv::logger>("./std.log");
+
 
         auto ptrbox = std::make_shared<srv::ptrbox>();
         ptrbox->config = config;
         ptrbox->filemap = filemap;
+        ptrbox->logger = logger;
 
         srv::server server(ptrbox);
         server.run();

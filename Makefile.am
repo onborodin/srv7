@@ -17,7 +17,8 @@ srv_SOURCES = \
 	server.cpp \
 	keymap.cpp \
 	request.cpp \
-	utils.cpp
+	utils.cpp \
+	logger.cpp
 
 clean-local:
 	rm -f *~
