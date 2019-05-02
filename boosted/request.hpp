@@ -19,24 +19,42 @@
  *
  */
 
-#ifndef SERVER_KEYMAP_HPP
-#define SERVER_KEYMAP_HPP
+#ifndef HTTP_REQUEST_HPP
+#define HTTP_REQUEST_HPP
 
 #include <iostream>
+#include <string>
 #include <map>
+#include <unordered_map>
+#include <sstream>
+#include <vector>
+#include <regex>
 
-namespace srv {
+namespace http {
+namespace request {
 
-class keymap {
+class header {
     private:
-        std::map<std::string, std::string> keymap;
-        std::string tolower(std::string s);
+        std::map<std::string, std::string> map;
+
+        std::string _method;
+        std::string _resource;
+        std::string _version;
     public:
-        void set(std::string key, std::string arg);
-        std::string get(std::string key);
-        std::string dump();
+        enum class type { get, post, head, unknown };
+
+        header(std::string& source);
+        type method();
+        std::string resource();
+        std::unordered_map<std::string, std::string> args();
+        int content_length();
+        bool accept_encoding(std::string enc);
+        std::vector<std::string> accept_encoding();
+        std::vector<std::string> authorization();
+        std::string str();
 };
 
-} // namespace srv
+} // namespace http
+} // namespace request
 
 #endif

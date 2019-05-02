@@ -28,15 +28,14 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=7
-FILE_NAME_0=917;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fmain.cpp;0;4
-FILE_NAME_1=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fserver.hpp;0;4
-FILE_NAME_2=4745;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.cpp;0;4
-FILE_NAME_3=1226;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.hpp;0;4
-FILE_NAME_4=3846;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Frequest.cpp;0;4
-FILE_NAME_5=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Frequest.hpp;0;4
-FILE_NAME_6=220;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Futils.hpp;0;4
-FILE_NAME_7=693;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Futils.cpp;0;4
+current_page=2
+FILE_NAME_0=3378;C++;0;EUTF-8;1;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fhandler.hpp;0;4
+FILE_NAME_1=1348;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.hpp;0;4
+FILE_NAME_2=3027;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconnection.cpp;0;4
+FILE_NAME_3=185;Make;0;EUTF-8;1;1;0;%2Fhome%2Fziggi%2Fsrv7%2FMakefile.am;0;4
+FILE_NAME_4=169;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Futils.cpp;0;4
+FILE_NAME_5=484;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Futils.hpp;0;4
+FILE_NAME_6=2121;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fserver.cpp;0;4
 
 [VTE]
 last_dir=/home/ziggi

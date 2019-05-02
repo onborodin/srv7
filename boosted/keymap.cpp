@@ -19,24 +19,46 @@
  *
  */
 
-#ifndef SERVER_KEYMAP_HPP
-#define SERVER_KEYMAP_HPP
 
 #include <iostream>
 #include <map>
 
-namespace srv {
+#include "keymap.hpp"
 
-class keymap {
-    private:
-        std::map<std::string, std::string> keymap;
-        std::string tolower(std::string s);
-    public:
-        void set(std::string key, std::string arg);
-        std::string get(std::string key);
-        std::string dump();
-};
+namespace server {
 
-} // namespace srv
+std::string keymap::tolower(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){
+            return std::tolower(c);
+    });
+    return s;
+}
 
-#endif
+void keymap::set(std::string key, std::string arg) {
+    key = tolower(key);
+    keymap.erase(key);
+    std::pair<std::string, std::string> pair = { key, arg };
+    keymap.insert(pair);
+}
+
+std::string keymap::get(std::string key) {
+    std::string res = "";
+    auto i = keymap.find(tolower(key));
+    if (i != keymap.end()) {
+        res += i->second;
+    }
+    return res;
+}
+
+std::string keymap::dump() {
+    std::string res = "";
+    for (auto& item: keymap) {
+        res += item.first;
+        res += ": ";
+        res += item.second;
+        res += "\r\n";
+    }
+    return res;
+}
+
+} // namespace server

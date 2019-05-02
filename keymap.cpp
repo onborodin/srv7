@@ -25,7 +25,7 @@
 
 #include "keymap.hpp"
 
-namespace server {
+namespace srv {
 
 std::string keymap::tolower(std::string s) {
     std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){
@@ -61,4 +61,4 @@ std::string keymap::dump() {
     return res;
 }
 
-} // namespace server
+} // namespace srv

@@ -285,7 +285,7 @@ top_srcdir = .
 AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
-AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
+AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
 srv_SOURCES = \
 	main.cpp \
 	connection.cpp \

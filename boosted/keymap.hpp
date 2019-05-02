@@ -19,13 +19,13 @@
  *
  */
 
-#ifndef SERVER_KEYMAP_HPP
-#define SERVER_KEYMAP_HPP
+#ifndef KEYMAP_HPP
+#define KEYMAP_HPP
 
 #include <iostream>
 #include <map>
 
-namespace srv {
+namespace server {
 
 class keymap {
     private:
@@ -37,6 +37,6 @@ class keymap {
         std::string dump();
 };
 
-} // namespace srv
+} // namespace server
 
 #endif

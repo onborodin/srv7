@@ -20,14 +20,45 @@
  */
 
 #include <iostream>
+#include <filesystem>
 #include <string>
+
 #include <asio.hpp>
 
 #include "server.hpp"
+#include "config.hpp"
 
 int main(int argc, char* argv[]) {
     try {
-        server::server server("0.0.0.0", "1026", 5);
+
+        auto config = std::make_shared<srv::config>();
+        config->address = "0.0.0.0";
+        config->port = "1026";
+        config->pubdir = "./public";
+        config->poolsize = 5;
+        config->crtfile = "./server.crt";
+        config->keyfile = "./server.key";
+        config->backlog = 2048;
+        config->index = "index.html";
+
+        auto pwd = std::filesystem::current_path();
+
+        auto filemap = std::make_shared<srv::keymap>();
+
+        filemap->set("html", "text/html");
+        filemap->set("js", "application/javascript");
+        filemap->set("json", "application/json");
+        filemap->set("jpg", "image/jpeg");
+        filemap->set("png", "image/png");
+        filemap->set("css", "text/css");
+        filemap->set("cpp", "text/plain");
+
+
+        auto ptrbox = std::make_shared<srv::ptrbox>();
+        ptrbox->config = config;
+        ptrbox->filemap = filemap;
+
+        srv::server server(ptrbox);
         server.run();
     } catch (std::exception& e) {
         std::cerr << "exception: " << e.what() << "\n";

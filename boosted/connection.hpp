@@ -27,21 +27,20 @@
 #include <array>
 #include <vector>
 
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
-#include "config.hpp"
 
-namespace srv {
+
+namespace server {
 
 class connection : public std::enable_shared_from_this<connection> {
   private:
-    asio::io_context::strand strand;
-    asio::ip::tcp::socket socket;
-    asio::ssl::context& ssl_context;
-    std::shared_ptr<srv::ptrbox> ptrbox;
+    boost::asio::io_context::strand strand;
+    boost::asio::ip::tcp::socket socket;
+    boost::asio::ssl::context& ssl_context;
 
-    asio::ssl::stream<asio::ip::tcp::socket> *ssl_socket;
+    boost::asio::ssl::stream<boost::asio::ip::tcp::socket> *ssl_socket;
 
     std::string response;
     std::string request;
@@ -55,21 +54,20 @@ class connection : public std::enable_shared_from_this<connection> {
     void write();
 
   public:
-    connection(
-        asio::ssl::context& ssl_context,
-        asio::io_context& io_context,
-        std::shared_ptr<srv::ptrbox> ptrbox
+    explicit connection(
+        boost::asio::ssl::context& ssl_context,
+        boost::asio::io_context& io_context
     );
     connection(const connection&) = delete;
     connection& operator=(const connection&) = delete;
 
-    asio::ip::tcp::socket& get_socket();
+    boost::asio::ip::tcp::socket& get_socket();
 
     void start();
     void stop();
     ~connection();
 };
 
-} // namespace srv
+} // namespace server
 
 #endif // SERVER_CONNECTION_HPP

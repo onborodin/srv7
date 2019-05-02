@@ -19,24 +19,18 @@
  *
  */
 
-#ifndef SERVER_KEYMAP_HPP
-#define SERVER_KEYMAP_HPP
-
 #include <iostream>
-#include <map>
+#include <string>
+#include <boost/asio.hpp>
 
-namespace srv {
+#include "server.hpp"
 
-class keymap {
-    private:
-        std::map<std::string, std::string> keymap;
-        std::string tolower(std::string s);
-    public:
-        void set(std::string key, std::string arg);
-        std::string get(std::string key);
-        std::string dump();
-};
-
-} // namespace srv
-
-#endif
+int main(int argc, char* argv[]) {
+    try {
+        server::server server("0.0.0.0", "1026", 5);
+        server.run();
+    } catch (std::exception& e) {
+        std::cerr << "exception: " << e.what() << "\n";
+    }
+    return 0;
+}

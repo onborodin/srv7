@@ -19,22 +19,31 @@
  *
  */
 
-#ifndef SERVER_KEYMAP_HPP
-#define SERVER_KEYMAP_HPP
 
-#include <iostream>
-#include <map>
+#ifndef SERVER_CONFIG_HPP
+#define SERVER_CONFIG_HPP
+
+#include <string>
+#include "keymap.hpp"
 
 namespace srv {
 
-class keymap {
-    private:
-        std::map<std::string, std::string> keymap;
-        std::string tolower(std::string s);
+class config {
     public:
-        void set(std::string key, std::string arg);
-        std::string get(std::string key);
-        std::string dump();
+        std::string port;
+        std::string address;
+        std::string keyfile;
+        std::string crtfile;
+        std::string pubdir;
+        std::string index;
+        int poolsize;
+        int backlog;
+};
+
+class ptrbox {
+    public:
+        std::shared_ptr<::srv::keymap> filemap;
+        std::shared_ptr<::srv::config> config;
 };
 
 } // namespace srv

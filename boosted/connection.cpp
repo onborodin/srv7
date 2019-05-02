@@ -27,32 +27,25 @@
 #include <iomanip>
 #include <chrono>
 
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 #include "connection.hpp"
 #include "request.hpp"
 #include "keymap.hpp"
 #include "handler.hpp"
 
-namespace srv {
+namespace server {
 
-connection::connection(
-        asio::ssl::context& ssl_context,
-        asio::io_context& io_context,
-        std::shared_ptr<srv::ptrbox> ptrbox
-    ) : strand(io_context),
-        socket(io_context),
-        ssl_context(ssl_context),
-        ptrbox(ptrbox)
-     {}
+connection::connection(boost::asio::ssl::context& ssl_context, boost::asio::io_context& io_context)
+    : strand(io_context), socket(io_context), ssl_context(ssl_context) {}
 
-asio::ip::tcp::socket& connection::get_socket() {
+boost::asio::ip::tcp::socket& connection::get_socket() {
     return socket;
 }
 
 void connection::start() {
-    ssl_socket = new asio::ssl::stream<asio::ip::tcp::socket>(
+    ssl_socket = new boost::asio::ssl::stream<boost::asio::ip::tcp::socket>(
         std::move(socket),
         ssl_context
     );
@@ -62,8 +55,8 @@ void connection::start() {
 
 void connection::handshake() {
         auto self(shared_from_this());
-        ssl_socket->async_handshake(asio::ssl::stream_base::server,
-        [this, self](const asio::error_code& error) {
+        ssl_socket->async_handshake(boost::asio::ssl::stream_base::server,
+        [this, self](const boost::system::error_code& error) {
             if (!error) {
                 this->read();
             } else {
@@ -74,16 +67,16 @@ void connection::handshake() {
 
 void connection::read() {
     auto self(shared_from_this());
-    auto handler = [this, self](asio::error_code ec, std::size_t size) {
+    auto handler = [this, self](boost::system::error_code ec, std::size_t size) {
         if (!ec) {
             this->write();
-        } else if (ec != asio::error::operation_aborted) {
+        } else if (ec != boost::asio::error::operation_aborted) {
             this->stop();
         }
     };
     std::string delimeter = "\r\n\r\n";
-    asio::async_read_until(
-        *ssl_socket, asio::dynamic_buffer(request),
+    boost::asio::async_read_until(
+        *ssl_socket, boost::asio::dynamic_buffer(request),
         delimeter,
         handler
     );
@@ -92,7 +85,7 @@ void connection::read() {
 
 void connection::write() {
 
-    srv::handler handler(request);
+    server::handler handler(request);
     std::string response_header;
     std::string response_content;
     handler.run(response_header, response_content);
@@ -101,22 +94,22 @@ void connection::write() {
     response.append(response_content);
 
     auto self(shared_from_this());
-    auto async_handler = [this, self](asio::error_code ec, std::size_t) {
+    auto async_handler = [this, self](boost::system::error_code ec, std::size_t) {
         if (!ec) {
             this->stop();
         }
-        if (ec != asio::error::operation_aborted) {
+        if (ec != boost::asio::error::operation_aborted) {
             this->stop();
         }
     };
-    asio::async_write(
-        *ssl_socket, asio::buffer(response),
-        asio::bind_executor(strand, async_handler)
+    boost::asio::async_write(
+        *ssl_socket, boost::asio::buffer(response),
+        boost::asio::bind_executor(strand, async_handler)
     );
 }
 
 void connection::stop() {
-    asio::error_code ignored_ec;
+    boost::system::error_code ignored_ec;
     ssl_socket->shutdown(ignored_ec);
 }
 
@@ -124,4 +117,4 @@ connection::~connection() {
     delete ssl_socket;
 }
 
-} // namespace srv
+} // namespace server

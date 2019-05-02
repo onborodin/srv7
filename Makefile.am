@@ -7,7 +7,7 @@ ACLOCAL_AMFLAGS = -I m4
 LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto
 
 LOCALBASE = /usr/local
-AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall
+AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
 
 bin_PROGRAMS = srv
 

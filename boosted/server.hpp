@@ -26,29 +26,33 @@
 #include <string>
 #include <vector>
 
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
+#include <boost/thread/thread.hpp>
 
 #include "connection.hpp"
-#include "config.hpp"
 
-namespace srv {
+namespace server {
 
 class server {
   private:
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
+    std::size_t thread_pool_size;
+    boost::asio::io_context io_context;
+    boost::asio::signal_set signals;
+    boost::asio::ip::tcp::acceptor acceptor;
+    boost::asio::ssl::context ssl_context;
 
     std::shared_ptr<connection> connection;
-    std::shared_ptr<srv::ptrbox> ptrbox;
 
     void accept();
     void stop();
 
   public:
-    server(std::shared_ptr<srv::ptrbox> ptrbox);
+    explicit server(
+        const std::string& address,
+        const std::string& port,
+        std::size_t thread_pool_size
+    );
 
     void run();
 
@@ -57,6 +61,6 @@ class server {
 
 };
 
-} // namespace srv
+} // namespace server
 
 #endif // SERVER_SERVER_HPP
