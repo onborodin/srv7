@@ -31,30 +31,41 @@
 #include <regex>
 
 namespace http {
-namespace request {
 
-class header {
+class request {
     private:
-        std::map<std::string, std::string> map;
-
+        std::unordered_map<std::string, std::string> headers;
         std::string _method;
         std::string _resource;
         std::string _version;
+        std::string _content;
     public:
-        enum class type { get, post, head, unknown };
+        request();
 
-        header(std::string& source);
-        type method();
+        void allocate(std::string source);
+
+        std::string method();
         std::string resource();
         std::unordered_map<std::string, std::string> args();
+
         int content_length();
+
         bool accept_encoding(std::string enc);
         std::vector<std::string> accept_encoding();
+
+        bool accept(std::string mime);
+        std::vector<std::string> accept();
+
         std::vector<std::string> authorization();
+
         std::string str();
+
+        void content(std::string& source);
+        void content_append(std::string& source);
+        std::string& content();
 };
 
+
 } // namespace http
-} // namespace request
 
 #endif

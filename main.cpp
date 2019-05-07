@@ -23,7 +23,7 @@
 #include <filesystem>
 #include <string>
 
-#include <asio.hpp>
+#include <boost/asio.hpp>
 
 #include "logger.hpp"
 #include "keymap.hpp"
@@ -54,8 +54,9 @@ int main(int argc, char* argv[]) {
         filemap->set("png", "image/png");
         filemap->set("css", "text/css");
         filemap->set("cpp", "text/plain");
+        filemap->set("ico", "image/x-icon");
 
-        auto logger = std::make_shared<srv::logger>("./std.log");
+        auto logger = std::make_shared<srv::logger>("./std.log", 3);
 
 
         auto ptrbox = std::make_shared<srv::ptrbox>();

@@ -108,8 +108,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_srv_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT) \
-	keymap.$(OBJEXT) request.$(OBJEXT) utils.$(OBJEXT) \
-	logger.$(OBJEXT)
+	keymap.$(OBJEXT) request.$(OBJEXT) response.$(OBJEXT) \
+	utils.$(OBJEXT) logger.$(OBJEXT) handler.$(OBJEXT)
 srv_OBJECTS = $(am_srv_OBJECTS)
 srv_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -219,7 +219,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto
+LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto -lboost_thread
 LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
@@ -286,15 +286,18 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
-AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
+#AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
+AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
 srv_SOURCES = \
 	main.cpp \
 	connection.cpp \
 	server.cpp \
 	keymap.cpp \
 	request.cpp \
+	response.cpp \
 	utils.cpp \
-	logger.cpp
+	logger.cpp \
+	handler.cpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -403,10 +406,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connection.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/handler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keymap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/logger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/request.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/response.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/server.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils.Po@am__quote@
 

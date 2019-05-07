@@ -26,8 +26,8 @@
 #include <string>
 #include <vector>
 
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 #include "connection.hpp"
 #include "config.hpp"
@@ -36,11 +36,11 @@ namespace srv {
 
 class server {
   private:
-    asio::io_context io_context;
-    asio::signal_set signals;
-    asio::ip::tcp::acceptor acceptor;
-    asio::ssl::context ssl_context;
+    boost::asio::io_context io_context;
+    boost::asio::signal_set signals;
+    boost::asio::ip::tcp::acceptor acceptor;
 
+    boost::asio::ssl::context ssl_context;
     std::shared_ptr<connection> connection;
     std::shared_ptr<srv::ptrbox> ptrbox;
 

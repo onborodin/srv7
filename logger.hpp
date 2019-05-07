@@ -53,7 +53,7 @@ class logger {
 
         std::string timestamp();
     public:
-        logger(std::string path, int num_threads = 1);
+        logger(std::string path, int num_threads = 2);
         void log(std::string msg);
 };
 

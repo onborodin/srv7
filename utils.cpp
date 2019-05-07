@@ -40,28 +40,28 @@ std::string base64_decode(const std::string &in) {
     int val=0, valb=-8;
     for (unsigned char c: in) {
         if (T[c] == -1) break;
-        val = (val<<6) + T[c];
+        val = (val << 6) + T[c];
         valb += 6;
-        if (valb>=0) {
-            out.push_back(char((val>>valb)&0xFF));
-            valb-=8;
+        if (valb >= 0) {
+            out.push_back(char(( val >> valb) & 0xFF));
+            valb -= 8;
         }
     }
     return out;
 }
 
-std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
-    std::vector<std::string> tokens;
+std::vector<std::string> split(const std::string& source, const std::string& delimiter) {
+    std::vector<std::string> substringv;
     std::size_t begin = 0;
-    std::size_t found = std::string::npos;
-    while ((found = s.find(delimiter, begin)) != std::string::npos) {
-        std::string token = s.substr(begin, found - begin);
-        begin = found + delimiter.size();
-        tokens.push_back(token);
+    std::size_t position = std::string::npos;
+    while ((position = source.find(delimiter, begin)) != std::string::npos) {
+        std::string substring = source.substr(begin, position - begin);
+        begin = position + delimiter.size();
+        substringv.push_back(substring);
     }
-    std::string token = s.substr(begin);
-    tokens.push_back(token);
-    return tokens;
+    std::string substring = source.substr(begin);
+    substringv.push_back(substring);
+    return substringv;
 }
 
 std::string tolower(std::string s) {
@@ -70,6 +70,14 @@ std::string tolower(std::string s) {
     });
     return s;
 }
+
+std::string toupper(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(), [](auto c){
+            return std::toupper(c);
+    });
+    return s;
+}
+
 
 std::string camelcase (std::string str, std::string delimiter = "-") {
     std::string result;
@@ -85,12 +93,22 @@ std::string camelcase (std::string str, std::string delimiter = "-") {
     return result;
 }
 
-std::string timestamp() {
+std::string timestamp(std::time_t shift = 0) {
     std::stringstream ss;
-    std::time_t now = std::time(0);
+    std::time_t now = std::time(nullptr);
+    now += shift;
     ss << std::put_time(std::gmtime(&now), "%a, %d %b %Y %T %Z");
     return ss.str();
 }
+
+std::string unixtime(std::time_t shift = 0) {
+    std::time_t now = std::time(nullptr);
+    now += shift;
+    std::stringstream ss;
+    ss << std::chrono::seconds(now).count();
+    return ss.str();
+}
+
 
 
 } // namespace utils

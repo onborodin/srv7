@@ -23,9 +23,9 @@
 #include <vector>
 #include <memory>
 
-
-#include <asio.hpp>
-#include <asio/ssl.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 #include "server.hpp"
 #include "config.hpp"
@@ -33,9 +33,10 @@
 namespace srv {
 
 server::server(std::shared_ptr<srv::ptrbox> ptrbox)
-    : signals(io_context),
+    : io_context(5), signals(io_context),
       acceptor(io_context),
-      ssl_context(asio::ssl::context::sslv23),
+    ssl_context(boost::asio::ssl::context::sslv23),
+
       connection(),
       ptrbox(ptrbox)
     {
@@ -43,28 +44,28 @@ server::server(std::shared_ptr<srv::ptrbox> ptrbox)
     signals.add(SIGINT);
     signals.add(SIGTERM);
 
-    auto signal_handler = [this](asio::error_code ec, int signo) {
+    auto signal_handler = [this](boost::system::error_code ec, int signo) {
         stop();
     };
 
     signals.async_wait(signal_handler);
 
     ssl_context.set_options(
-        asio::ssl::context::default_workarounds
-        | asio::ssl::context::no_sslv2
-        | asio::ssl::context::single_dh_use
+        boost::asio::ssl::context::default_workarounds
+        | boost::asio::ssl::context::no_sslv2
+        | boost::asio::ssl::context::single_dh_use
     );
     ssl_context.use_certificate_chain_file(ptrbox->config->crtfile);
-    ssl_context.use_private_key_file(ptrbox->config->keyfile, asio::ssl::context::pem);
+    ssl_context.use_private_key_file(ptrbox->config->keyfile, boost::asio::ssl::context::pem);
 
-    asio::ip::tcp::resolver resolver(io_context);
-    asio::ip::tcp::endpoint endpoint = *resolver.resolve(
+    boost::asio::ip::tcp::resolver resolver(io_context);
+    boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(
         ptrbox->config->address,
         ptrbox->config->port
     ).begin();
 
     acceptor.open(endpoint.protocol());
-    acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
+    acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
     acceptor.bind(endpoint);
     acceptor.listen(ptrbox->config->backlog);
 
@@ -72,13 +73,13 @@ server::server(std::shared_ptr<srv::ptrbox> ptrbox)
 }
 
 void server::run() {
-    std::vector<std::shared_ptr<asio::thread>> threads;
+    std::vector<std::shared_ptr<boost::thread>> threads;
     for (std::size_t i = 0; i < ptrbox->config->poolsize; ++i) {
 
         auto f = [this]{ io_context.run(); };
-        auto t = new asio::thread(std::move(f));
+        auto t = new boost::thread(std::move(f));
 
-        std::shared_ptr<asio::thread> thread(t);
+        std::shared_ptr<boost::thread> thread(t);
         threads.push_back(thread);
     }
     for (std::size_t i = 0; i < threads.size(); ++i) {
@@ -87,14 +88,17 @@ void server::run() {
 }
 
 void server::accept() {
-    connection.reset(new class connection(ssl_context, io_context, ptrbox));
-    auto handler = [this](const asio::error_code& ec) {
-        if (!ec) {
+    boost::asio::ip::tcp::socket socket(io_context);
+    //boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket(std::move(socket), ssl_context);
+
+    auto callback = [this](const boost::system::error_code& error) {
+        if (!error) {
             connection->start();
         }
         this->accept();
     };
-    acceptor.async_accept(connection->get_socket(), handler);
+    connection.reset(new class connection(ssl_context, io_context, ptrbox));
+    acceptor.async_accept(connection->get_socket(), callback);
 }
 
 void server::stop() {

@@ -59,7 +59,7 @@ logger::logger(std::string path, int num_threads) : path(path) {
                 auto msg = queue.front();
                 queue.pop();
                 cv.notify_one();
-                std::cerr << msg.content << std::endl;
+                //std::cerr << msg.content << std::endl;
                 *file << msg.content << std::endl;
             }
         }

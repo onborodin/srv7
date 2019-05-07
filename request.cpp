@@ -19,7 +19,6 @@
  *
  */
 
-
 #include <iostream>
 #include <string>
 #include <map>
@@ -32,19 +31,36 @@
 #include "utils.hpp"
 
 namespace http {
-namespace request {
 
-header::header(std::string& source) {
-    auto headerv = http::utils::split(source, "\r\n");
+request::request() {};
+//request(std::string source) { allocate(source) };
+
+void request::allocate(std::string source) {
+
+    std::size_t position = std::string::npos;
+    std::string delimiter = "\r\n\r\n";
+    std::string header_part;
+    std::string content_part;
+    if ((position = source.find(delimiter, 0)) != std::string::npos) {
+        header_part = source.substr(0, position + delimiter.length());
+        content_part = source.substr(position + delimiter.length(), source.length());
+    } else {
+        header_part = source;
+        content_part = "";
+    }
+
+    _content = content_part;
+
+    auto headerv = http::utils::split(header_part, "\r\n");
     auto line = headerv.front();
 
     std::smatch match;
     std::regex_search(line, match, std::regex("^(GET|POST|HEAD)[ ]+(.*)[ ]+(HTTP/1.[01])$"));
 
     if (match.size() == 4) {
-        _method = http::utils::tolower(match[1]);
+        _method = http::utils::toupper(match[1]);
         _resource = match[2];
-        _version = http::utils::tolower(match[3]);
+        _version = http::utils::toupper(match[3]);
     }
 
     for(auto line: headerv) {
@@ -53,25 +69,22 @@ header::header(std::string& source) {
         if (match.size() == 3 && match[1].length() > 0 && match[2].length() > 0) {
             auto key = http::utils::tolower(match[1]);
             auto value = match[2];
-            map.erase(key);
+            headers.erase(key);
             std::pair<std::string, std::string> pair = { key, value };
-            map.insert(pair);
+            headers.insert(pair);
         }
     }
 }
 
-header::type header::method() {
-    if (_method == "get") return type::get;
-    if (_method == "post") return type::post;
-    if (_method == "head") return type::head;
-    return type::unknown;
+std::string request::method() {
+    return _method;
 }
 
-std::string header::resource() {
+std::string request::resource() {
     return http::utils::split(_resource, "?").at(0);
 }
 
-std::unordered_map<std::string, std::string> header::args() {
+std::unordered_map<std::string, std::string> request::args() {
     auto argstr = http::utils::split(_resource, "?").at(1);
     std::unordered_map<std::string,std::string> result;
     if (argstr.length() > 0) {
@@ -85,18 +98,17 @@ std::unordered_map<std::string, std::string> header::args() {
     return result;
 }
 
-
-int header::content_length() {
-    auto value = map.find("content-length");
-    if (value != map.end()) {
+int request::content_length() {
+    auto value = headers.find("content-length");
+    if (value != headers.end()) {
         return std::stoi(value->second);
     }
     return 0;
 }
 
-bool header::accept_encoding(std::string enc) {
-    auto res = map.find("accept-encoding");
-    if (res != map.end()) {
+bool request::accept_encoding(std::string enc) {
+    auto res = headers.find("accept-encoding");
+    if (res != headers.end()) {
         auto line = std::regex_replace(res->second, std::regex("(,)[ ]+"), "$1");
         auto v = http::utils::split(line, ",");
         for(auto i: v) {
@@ -106,20 +118,45 @@ bool header::accept_encoding(std::string enc) {
     return false;
 }
 
-std::vector<std::string> header::accept_encoding() {
+std::vector<std::string> request::accept_encoding() {
     std::vector<std::string> result;
-    auto res = map.find("accept-encoding");
-    if (res != map.end()) {
+    auto res = headers.find("accept-encoding");
+    if (res != headers.end()) {
         auto line = std::regex_replace(res->second, std::regex("(,)[ ]+"), "$1");
         result = http::utils::split(line, ",");
     }
     return result;
 }
 
-std::vector<std::string> header::authorization() {
+bool request::accept(std::string mime) {
+    auto res = headers.find("accept");
+    if (res != headers.end()) {
+        auto line = std::regex_replace(res->second, std::regex("(,)[ ]+"), "$1");
+        auto v = http::utils::split(line, ",");
+        for(auto i: v) {
+            if (i == "*/*") return true;
+        }
+        for(auto i: v) {
+            if (i == mime) return true;
+        }
+    }
+    return false;
+}
+
+std::vector<std::string> request::accept() {
     std::vector<std::string> result;
-    auto found = map.find("authorization");
-    if (found != map.end()) {
+    auto res = headers.find("accept");
+    if (res != headers.end()) {
+        auto line = std::regex_replace(res->second, std::regex("(,)[ ]+"), "$1");
+        result = http::utils::split(line, ",");
+    }
+    return result;
+}
+
+std::vector<std::string> request::authorization() {
+    std::vector<std::string> result;
+    auto found = headers.find("authorization");
+    if (found != headers.end()) {
         std::smatch match;
         std::regex regex("^(basic)[ ]+(.*)$", std::regex_constants::icase);
         std::regex_search(found->second, match, regex);
@@ -134,13 +171,23 @@ std::vector<std::string> header::authorization() {
     return result;
 }
 
-std::string header::str() {
+std::string request::str() {
     std::string res;
-    for(auto& i: map) {
-        res +=  i.first + ": " + i.second + "\r\n";
+    res = _method + " " + _resource + " " + _version + "\r\n";
+    for(auto& i: headers) {
+        res +=  http::utils::camelcase(i.first) + ": " + i.second + "\r\n";
     }
     return res;
 }
 
+void request::content(std::string& source) {
+    _content = source;
+}
+void request::content_append(std::string& source) {
+    _content += source;
+}
+std::string& request::content() {
+    return _content;
+}
+
 } // namespace http
-} // namespace request

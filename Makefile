@@ -108,8 +108,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_srv_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT) \
-	keymap.$(OBJEXT) request.$(OBJEXT) utils.$(OBJEXT) \
-	logger.$(OBJEXT)
+	keymap.$(OBJEXT) request.$(OBJEXT) response.$(OBJEXT) \
+	utils.$(OBJEXT) logger.$(OBJEXT) handler.$(OBJEXT)
 srv_OBJECTS = $(am_srv_OBJECTS)
 srv_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -219,7 +219,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
 LIBOBJS = 
-LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto
+LIBS = -L${LOCALBASE}/lib -pthread -lssl -lcrypto -lboost_thread
 LTLIBOBJS = 
 MAKEINFO = ${SHELL} /home/ziggi/srv7/missing makeinfo
 MKDIR_P = /usr/local/bin/gmkdir -p
@@ -286,15 +286,18 @@ top_srcdir = .
 AUTOMAKE_OPTIONS = foreign no-installinfo
 ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
-AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
+#AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
+AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
 srv_SOURCES = \
 	main.cpp \
 	connection.cpp \
 	server.cpp \
 	keymap.cpp \
 	request.cpp \
+	response.cpp \
 	utils.cpp \
-	logger.cpp
+	logger.cpp \
+	handler.cpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -403,10 +406,12 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/connection.Po
+include ./$(DEPDIR)/handler.Po
 include ./$(DEPDIR)/keymap.Po
 include ./$(DEPDIR)/logger.Po
 include ./$(DEPDIR)/main.Po
 include ./$(DEPDIR)/request.Po
+include ./$(DEPDIR)/response.Po
 include ./$(DEPDIR)/server.Po
 include ./$(DEPDIR)/utils.Po
 
