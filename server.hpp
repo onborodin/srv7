@@ -42,13 +42,13 @@ class server {
 
     boost::asio::ssl::context ssl_context;
     std::shared_ptr<connection> connection;
-    std::shared_ptr<srv::ptrbox> ptrbox;
+    srv::factory& factory;
 
     void accept();
     void stop();
 
   public:
-    server(std::shared_ptr<srv::ptrbox> ptrbox);
+    server(srv::factory& factory);
 
     void run();
 

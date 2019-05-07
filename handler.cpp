@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <regex>
 
 #include "request.hpp"
 #include "utils.hpp"
@@ -34,12 +35,25 @@
 
 namespace srv {
 
-handler::handler(std::shared_ptr<srv::ptrbox> ptrbox) : ptrbox(ptrbox) {}
+handler::handler(srv::factory& factory) : factory(factory) {}
 
-void handler::handle(http::request& request, http::response& response) {
+std::string handler::content_type(std::string& path) {
+    std::string content_type;
+    auto ext = path.substr(path.find_last_of(".") + 1);
+    if (ext == path) ext = "";
+    if (ext.length() > 0) {
+        content_type = factory.filemap->get(ext);
+    }
+    if (content_type.length() == 0) {
+        content_type = "application/octet-stream";
+    }
+    return content_type;
+}
 
-    auto config = ptrbox->config;
-    auto logger = ptrbox->logger;
+void handler::filehandler(http::request& request, http::response& response) {
+
+    auto config = factory.config;
+    auto logger = factory.logger;
 
     std::string method = request.method();
     std::string resource = request.resource();
@@ -54,47 +68,52 @@ void handler::handle(http::request& request, http::response& response) {
         cpath = std::filesystem::path(path);
     }
 
-    int size = 0;
     std::string content;
     content.clear();
     std::ifstream is(cpath.string(), std::ios::binary | std::ios::in);
 
     if (is) {
-        ////is.seekg(0, std::ios::end);
-        ////size = is.tellg();
-        ////is.seekg(0, std::ios::beg);
         char buffer[1024];
         while (is.read(buffer, sizeof(buffer)).gcount() > 0) {
             content.append(buffer, is.gcount());
-            size += is.gcount();
         }
-    }
-
-    std::string content_type;
-    auto ext = path.substr(path.find_last_of(".") + 1);
-    if (ext == path) ext = "";
-
-    if (ext.length() > 0) {
-        content_type = ptrbox->filemap->get(ext);
-    }
-    if (content_type.length() == 0) {
-        content_type = "application/octet-stream";
-    }
-
-    std::stringstream response_header_ss;
-    std::stringstream log_ss;
-
-    if (size > 0) {
         response.code("200 OK");
-        response.header("content-type", content_type);
+        response.header("content-type", content_type(path));
         response.header("accept-ranges", "bytes");
+        response.content(content);
     } else {
         response.code("404 Not Found");
         response.header("content-type", "text/plain");
         response.header("connection", "close");
     }
-    response.content(content);
+}
 
+void handler::logger(http::request& request, http::response& response) {
+    std::stringstream ss;
+    ss << request.method() << " ";
+    ss << request.resource() << " ";
+    //ss << response.code() << " ";
+    ss << response.content().length();
+    factory.logger->log(ss.str());
+}
+
+void handler::route(http::request& request, http::response& response) {
+
+    auto resourse = request.resource();
+
+    //std::cerr << resourse << std::endl;
+
+    if (!http::utils::match(resourse, "^/api/.*$")) {
+        filehandler(request, response);
+        logger(request, response);
+        return;
+    }
+
+    response.code("404 Not Found");
+    response.header("content-type", "text/plain");
+    response.header("connection", "close");
+    response.content("Not found");
+    logger(request, response);
 }
 
 } // namespace srv

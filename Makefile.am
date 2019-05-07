@@ -10,6 +10,7 @@ LIBS += -lboost_thread
 LOCALBASE = /usr/local
 #AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
 AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall
+AM_CPPFLAGS = -Wall -Wextra
 
 
 bin_PROGRAMS = srv

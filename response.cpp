@@ -64,6 +64,10 @@ void response::content(const std::string& source) {
     _content = source;
 }
 
+std::string& response::content() {
+    return _content;
+}
+
 
 std::string response::str() {
         std:: stringstream header_ss;

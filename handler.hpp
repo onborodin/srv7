@@ -36,10 +36,14 @@ class handler {
     private:
         http::request request;
         http::response response;
-        std::shared_ptr<srv::ptrbox> ptrbox;
+        srv::factory& factory;
     public:
-        handler(std::shared_ptr<srv::ptrbox> ptrbox);
-        void handle(http::request& request, http::response& response);
+        handler(srv::factory& factory);
+        void route(http::request& request, http::response& response);
+        std::string content_type(std::string& path);
+        void filehandler(http::request& request, http::response& response);
+        void logger(http::request& request, http::response& response);
+
 };
 
 } // namespace srv

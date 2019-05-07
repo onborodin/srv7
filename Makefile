@@ -196,12 +196,11 @@ AUTOCONF = ${SHELL} /home/ziggi/srv7/missing autoconf
 AUTOHEADER = ${SHELL} /home/ziggi/srv7/missing autoheader
 AUTOMAKE = ${SHELL} /home/ziggi/srv7/missing automake
 AWK = gawk
-BISON = /usr/local/bin/bison
 CPPFLAGS = 
 CXX = clang++ -std=c++17
 CXXCPP = clang++ -E -std=c++17
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2
+CXXFLAGS = -O3
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -232,7 +231,6 @@ PACKAGE_TARNAME = main-cpp
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.01
 PATH_SEPARATOR = :
-REFLEX = /usr/local/bin/reflex
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = 
@@ -288,6 +286,7 @@ ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
 #AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
 AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
+AM_CPPFLAGS = -Wall -Wextra
 srv_SOURCES = \
 	main.cpp \
 	connection.cpp \

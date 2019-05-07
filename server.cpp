@@ -32,15 +32,14 @@
 
 namespace srv {
 
-server::server(std::shared_ptr<srv::ptrbox> ptrbox)
-    : io_context(5), signals(io_context),
-      acceptor(io_context),
-    ssl_context(boost::asio::ssl::context::sslv23),
-
-      connection(),
-      ptrbox(ptrbox)
+server::server(srv::factory& factory) :
+        io_context(5),
+        signals(io_context),
+        acceptor(io_context),
+        ssl_context(boost::asio::ssl::context::sslv23),
+        connection(),
+        factory(factory)
     {
-
     signals.add(SIGINT);
     signals.add(SIGTERM);
 
@@ -55,26 +54,26 @@ server::server(std::shared_ptr<srv::ptrbox> ptrbox)
         | boost::asio::ssl::context::no_sslv2
         | boost::asio::ssl::context::single_dh_use
     );
-    ssl_context.use_certificate_chain_file(ptrbox->config->crtfile);
-    ssl_context.use_private_key_file(ptrbox->config->keyfile, boost::asio::ssl::context::pem);
+    ssl_context.use_certificate_chain_file(factory.config->crtfile);
+    ssl_context.use_private_key_file(factory.config->keyfile, boost::asio::ssl::context::pem);
 
     boost::asio::ip::tcp::resolver resolver(io_context);
     boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(
-        ptrbox->config->address,
-        ptrbox->config->port
+        factory.config->address,
+        factory.config->port
     ).begin();
 
     acceptor.open(endpoint.protocol());
     acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
     acceptor.bind(endpoint);
-    acceptor.listen(ptrbox->config->backlog);
+    acceptor.listen(factory.config->backlog);
 
     this->accept();
 }
 
 void server::run() {
     std::vector<std::shared_ptr<boost::thread>> threads;
-    for (std::size_t i = 0; i < ptrbox->config->poolsize; ++i) {
+    for (std::size_t i = 0; i < factory.config->poolsize; ++i) {
 
         auto f = [this]{ io_context.run(); };
         auto t = new boost::thread(std::move(f));
@@ -97,7 +96,7 @@ void server::accept() {
         }
         this->accept();
     };
-    connection.reset(new class connection(ssl_context, io_context, ptrbox));
+    connection.reset(new class connection(ssl_context, io_context, factory));
     acceptor.async_accept(connection->get_socket(), callback);
 }
 

@@ -41,7 +41,7 @@ class config {
         int backlog;
 };
 
-class ptrbox {
+class factory {
     public:
         std::shared_ptr<::srv::keymap> filemap;
         std::shared_ptr<::srv::config> config;

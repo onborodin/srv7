@@ -41,13 +41,13 @@ namespace srv {
 connection::connection(
         boost::asio::ssl::context& ssl_context,
         boost::asio::io_context& io_context,
-        std::shared_ptr<srv::ptrbox> ptrbox) :
+        srv::factory& factory) :
             strand(io_context),
             socket(io_context),
-            io_context(io_context),
+            //io_context(io_context),
             ssl_context(ssl_context),
-            ptrbox(ptrbox),
-            handler(ptrbox) {
+            //factory(factory),
+            handler(factory) {
     }
 
 boost::asio::ip::tcp::socket& connection::get_socket() {
@@ -82,7 +82,7 @@ void connection::read_header() {
             if (promise_clen > 0 && promise_clen > actual_clen) {
                 read_content();
             } else {
-                handler.handle(request, response);
+                handler.route(request, response);
                 write();
             }
         } else if (ec != boost::asio::error::operation_aborted) {
@@ -97,7 +97,7 @@ void connection::read_content() {
    auto self(shared_from_this());
     auto callback = [this, self](boost::system::error_code ec, std::size_t size) {
         if (!ec) {
-            handler.handle(request, response);
+            handler.route(request, response);
             write();
         } else if (ec != boost::asio::error::operation_aborted) {
             stop();

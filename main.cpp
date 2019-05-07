@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         config->address = "0.0.0.0";
         config->port = "1026";
         config->pubdir = "./public";
-        config->poolsize = 5;
+        config->poolsize = 12;
         config->crtfile = "./server.crt";
         config->keyfile = "./server.key";
         config->backlog = 2048;
@@ -55,16 +55,16 @@ int main(int argc, char* argv[]) {
         filemap->set("css", "text/css");
         filemap->set("cpp", "text/plain");
         filemap->set("ico", "image/x-icon");
+        filemap->set("svg", "image/svg+xml");
 
-        auto logger = std::make_shared<srv::logger>("./std.log", 3);
+        auto logger = std::make_shared<srv::logger>("./std.log", 2);
 
+        srv::factory factory;
+        factory.config = config;
+        factory.filemap = filemap;
+        factory.logger = logger;
 
-        auto ptrbox = std::make_shared<srv::ptrbox>();
-        ptrbox->config = config;
-        ptrbox->filemap = filemap;
-        ptrbox->logger = logger;
-
-        srv::server server(ptrbox);
+        srv::server server(factory);
         server.run();
     } catch (std::exception& e) {
         std::cerr << "exception: " << e.what() << "\n";

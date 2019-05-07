@@ -6,12 +6,12 @@ AM_INIT_AUTOMAKE
 AC_PREFIX_DEFAULT(/usr/local)
 AC_LANG([C++])
 
-AC_PROG_CXX(clang++ llvm-g++ g++)
+AC_PROG_CXX(clang++ g++ c++)
 AC_PROG_CXX_C_O
 
-AC_PATH_TOOL(BISON, bison)
-AC_PATH_TOOL(REFLEX, reflex)
-AC_CHECK_LIB(reflex, reflex::convert)
+dnl AC_PATH_TOOL(BISON, bison)
+dnl AC_PATH_TOOL(REFLEX, reflex)
+dnl AC_CHECK_LIB(reflex, reflex::convert)
 
 AC_HEADER_STDBOOL
 

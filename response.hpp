@@ -43,6 +43,7 @@ class response {
         void header(const std::string& key, const std::string& value);
         void code(const std::string& code);
         void content(const std::string& source);
+        std::string& content();
         std::string str();
 
 };

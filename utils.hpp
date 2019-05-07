@@ -39,9 +39,10 @@ std::string base64_decode(const std::string &in);
 std::vector<std::string> split(const std::string& s, const std::string& delimiter);
 std::string tolower(std::string s);
 std::string toupper(std::string s);
-std::string camelcase (std::string str, std::string delimiter = "-");
+std::string camelcase (const std::string& str, const std::string delimiter = "-");
 std::string timestamp(std::time_t shift = 0);
 std::string unixtime(std::time_t shift = 0);
+bool match(const std::string& string, const std::string& pattern);
 
 } // namespace utils
 } // namespace http

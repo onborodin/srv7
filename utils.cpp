@@ -78,8 +78,7 @@ std::string toupper(std::string s) {
     return s;
 }
 
-
-std::string camelcase (std::string str, std::string delimiter = "-") {
+std::string camelcase (const std::string& str, std::string delimiter = "-") {
     std::string result;
     std::string prev{""};
     for(auto i: str) {
@@ -109,6 +108,14 @@ std::string unixtime(std::time_t shift = 0) {
     return ss.str();
 }
 
+bool match(const std::string& string, const std::string& pattern) {
+    std::smatch match;
+    std::regex_search(string, match, std::regex(pattern));
+    if (match.size() == 0) {
+        return false;
+    }
+    return true;
+}
 
 
 } // namespace utils

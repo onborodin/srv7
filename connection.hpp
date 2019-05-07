@@ -39,31 +39,27 @@ class connection : public std::enable_shared_from_this<connection> {
   private:
     boost::asio::io_context::strand strand;
     boost::asio::ip::tcp::socket socket;
-    boost::asio::io_context& io_context;
     boost::asio::ssl::context& ssl_context;
-
-    std::shared_ptr<srv::ptrbox> ptrbox;
-    srv::handler handler;
 
     std::shared_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> ssl_socket;
 
     std::string request_buffer;
     std::string response_buffer;
 
+    srv::handler handler;
     http::request request;
     http::response response;
 
     void ssl_handshake();
     void read_header();
     void read_content();
-    void handle();
     void write();
 
   public:
     connection(
         boost::asio::ssl::context& ssl_context,
         boost::asio::io_context& io_context,
-        std::shared_ptr<srv::ptrbox> ptrbox
+        srv::factory& factory
     );
     connection(const connection&) = delete;
     connection& operator=(const connection&) = delete;
