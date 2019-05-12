@@ -72,7 +72,7 @@ std::string& response::content() {
 std::string response::str() {
         std:: stringstream header_ss;
         header_ss << "HTTP/1.1 " << _code << "\r\n";
-        for(auto& i: headers) {
+        for (auto& i: headers) {
             header_ss << http::utils::camelcase(i.first) << ": " << i.second << "\r\n";
         }
         if (_content.length() > 0) {

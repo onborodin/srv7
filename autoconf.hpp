@@ -1,6 +1,27 @@
 /* autoconf.hpp.  Generated from autoconf.hpp.in by configure.  */
 /* autoconf.hpp.in.  Generated from configure.ac by autoheader.  */
 
+/* location of configuration files for ${PACKAGE} */
+#define APP_CONFDIR "/home/ziggi/srv7/"
+
+/* location of data dir */
+#define APP_DATADIR "/home/ziggi/srv7/public/"
+
+/* effective group id */
+#define APP_GROUP "wheel"
+
+/* location of libs */
+#define APP_LIBDIR "/home/ziggi/srv7/"
+
+/* location of ${PACKAGE} logdir */
+#define APP_LOGDIR "/home/ziggi/srv7/"
+
+/* location of pid file */
+#define APP_RUNDIR "/home/ziggi/srv7/"
+
+/* effective user */
+#define APP_USER "ziggi"
+
 /* Define to 1 if your C++ compiler doesn't accept -c and -o together. */
 /* #undef CXX_NO_MINUS_C_MINUS_O */
 
@@ -68,19 +89,19 @@
 /* #undef HAVE__BOOL */
 
 /* Name of package */
-#define PACKAGE "main-cpp"
+#define PACKAGE "srv"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "main.cpp"
+#define PACKAGE_NAME "srv"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "main.cpp 0.01"
+#define PACKAGE_STRING "srv 0.01"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "main-cpp"
+#define PACKAGE_TARNAME "srv"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
@@ -93,6 +114,27 @@
 
 /* Version number of package */
 #define VERSION "0.01"
+
+/* location of configuration files for ${PACKAGE} */
+#define app_confdir "/home/ziggi/srv7/"
+
+/* location of data dir */
+#define app_datadir "/home/ziggi/srv7/public/"
+
+/* effective group id */
+#define app_group "wheel"
+
+/* location of libs */
+#define app_libdir "/home/ziggi/srv7/"
+
+/* location of ${PACKAGE} logdir */
+#define app_logdir "/home/ziggi/srv7/"
+
+/* location of pid file */
+#define app_rundir "/home/ziggi/srv7/"
+
+/* effective user */
+#define app_user "ziggi"
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 /* #undef gid_t */

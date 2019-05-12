@@ -39,7 +39,7 @@ namespace srv {
 std::string logger::timestamp() {
     std::time_t now = std::time(0);
     std::stringstream ss;
-    ss << std::put_time(std::gmtime(&now), "%Y-%m-%d %T %Z");
+    ss << std::put_time(std::localtime(&now), "%Y-%m-%d %T %Z");
     return ss.str();
 }
 
@@ -54,13 +54,16 @@ logger::logger(std::string path, int num_threads) : path(path) {
     auto worker = [&]{
         while(true) {
             std::unique_lock<std::mutex> lock(mutex);
-            cv.wait(lock, [&]{ return !queue.empty(); });
+            cv.wait(lock, [&]{ return !queue.empty() || shutdown; });
             while(!queue.empty()) {
                 auto msg = queue.front();
                 queue.pop();
-                cv.notify_one();
-                //std::cerr << msg.content << std::endl;
                 *file << msg.content << std::endl;
+                std::cerr << msg.content << std::endl;
+                cv.notify_one();
+            }
+            if (shutdown) {
+                return;
             }
         }
     };
@@ -75,13 +78,24 @@ logger::logger(std::string path, int num_threads) : path(path) {
     }
 }
 
+void logger::stop() {
+    shutdown = true;
+    cv.notify_all();
+    while (queue.size() > 0) {
+        file->flush();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
 void logger::log(std::string msg) {
     message m(timestamp() + " " + msg);
     auto func = [&]{
         std::unique_lock<std::mutex> lock(mutex);
         queue.push(m);
     };
-    func();
+    if (!shutdown) {
+        func();
+    }
     cv.notify_all();
 }
 

@@ -28,11 +28,10 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=2
-FILE_NAME_0=1351;C++;0;EUTF-8;1;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fresponse.hpp;0;4
-FILE_NAME_1=2300;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fresponse.cpp;0;4
-FILE_NAME_2=3109;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fhandler.cpp;0;4
-FILE_NAME_3=0;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fhandler.hpp;0;4
+current_page=0
+FILE_NAME_0=784;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fmain.cpp;0;4
+FILE_NAME_1=1281;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconfig.hpp;0;4
+FILE_NAME_2=1151;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconfig.cpp;0;4
 
 [VTE]
 last_dir=/home/ziggi
@@ -51,7 +50,7 @@ NoneFT_00_CM=gmake
 NoneFT_00_WD=
 filetypes=None;C++;
 C++FT_01_LB=_Build
-C++FT_01_CM=gmake
+C++FT_01_CM=gmake 
 C++FT_01_WD=
 EX_00_LB=_Execute
 EX_00_CM=./srv

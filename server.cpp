@@ -32,13 +32,13 @@
 
 namespace srv {
 
-server::server(srv::factory& factory) :
-        io_context(5),
+server::server(srv::cover& factory) :
+        io_context(),
         signals(io_context),
         acceptor(io_context),
         ssl_context(boost::asio::ssl::context::sslv23),
         connection(),
-        factory(factory)
+        cover(factory)
     {
     signals.add(SIGINT);
     signals.add(SIGTERM);
@@ -54,26 +54,37 @@ server::server(srv::factory& factory) :
         | boost::asio::ssl::context::no_sslv2
         | boost::asio::ssl::context::single_dh_use
     );
-    ssl_context.use_certificate_chain_file(factory.config->crtfile);
-    ssl_context.use_private_key_file(factory.config->keyfile, boost::asio::ssl::context::pem);
+    ssl_context.use_certificate_chain_file(cover.config->crtfile);
+    ssl_context.use_private_key_file(cover.config->keyfile, boost::asio::ssl::context::pem);
+
+
 
     boost::asio::ip::tcp::resolver resolver(io_context);
     boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(
-        factory.config->address,
-        factory.config->port
+        cover.config->address,
+        cover.config->port
     ).begin();
 
     acceptor.open(endpoint.protocol());
     acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+
+    //boost::asio::socket_base::receive_buffer_size roption(819);
+    //acceptor.set_option(roption);
+
+    //boost::asio::socket_base::send_buffer_size woption(819);
+    //acceptor.set_option(woption);
+
+    //acceptor.non_blocking(true);
+
     acceptor.bind(endpoint);
-    acceptor.listen(factory.config->backlog);
+    acceptor.listen(cover.config->backlog);
 
     this->accept();
 }
 
 void server::run() {
     std::vector<std::shared_ptr<boost::thread>> threads;
-    for (std::size_t i = 0; i < factory.config->poolsize; ++i) {
+    for (std::size_t i = 0; i < cover.config->poolsize; ++i) {
 
         auto f = [this]{ io_context.run(); };
         auto t = new boost::thread(std::move(f));
@@ -87,7 +98,7 @@ void server::run() {
 }
 
 void server::accept() {
-    boost::asio::ip::tcp::socket socket(io_context);
+    //boost::asio::ip::tcp::socket socket(io_context);
     //boost::asio::ssl::stream<boost::asio::ip::tcp::socket> ssl_socket(std::move(socket), ssl_context);
 
     auto callback = [this](const boost::system::error_code& error) {
@@ -96,7 +107,7 @@ void server::accept() {
         }
         this->accept();
     };
-    connection.reset(new class connection(ssl_context, io_context, factory));
+    connection.reset(new class connection(ssl_context, io_context, cover));
     acceptor.async_accept(connection->get_socket(), callback);
 }
 

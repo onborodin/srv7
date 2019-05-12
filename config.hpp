@@ -19,35 +19,31 @@
  *
  */
 
+#ifndef SRV_CONFIG_HPP
+#define SRV_CONFIG_HPP
 
-#ifndef SERVER_CONFIG_HPP
-#define SERVER_CONFIG_HPP
-
+#include <iostream>
 #include <string>
-#include "keymap.hpp"
-#include "logger.hpp"
+#include <map>
+#include <fstream>
+#include <vector>
+#include <regex>
 
 namespace srv {
 
 class config {
+    private:
+        std::map<std::string, std::string> str_map;
+        std::map<std::string, int> num_map;
+        std::vector<std::string> split(const std::string& source, const std::string& delimiter);
+
     public:
-        std::string port;
-        std::string address;
-        std::string keyfile;
-        std::string crtfile;
-        std::string pubdir;
-        std::string index;
-        int poolsize;
-        int backlog;
-};
+        bool read(std::string filename);
+        int num_value(const std::string& key);
+        std::string str_value(const std::string& key);
+        void set_default(std::string key, int value);
+        void set_default(std::string key, std::string value);
+    };
 
-class factory {
-    public:
-        std::shared_ptr<::srv::keymap> filemap;
-        std::shared_ptr<::srv::config> config;
-        std::shared_ptr<::srv::logger> logger;
-};
-
-} // namespace srv
-
+} // namespce srv
 #endif

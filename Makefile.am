@@ -10,24 +10,25 @@ LIBS += -lboost_thread
 LOCALBASE = /usr/local
 #AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
 AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall
-AM_CPPFLAGS = -Wall -Wextra
-
+#AM_CPPFLAGS = -Wall -Wextra
 
 bin_PROGRAMS = srv
 
 srv_SOURCES = \
 	main.cpp \
-	connection.cpp \
-	server.cpp \
-	keymap.cpp \
-	request.cpp \
-	response.cpp \
-	utils.cpp \
+	config.cpp \
 	logger.cpp \
-	handler.cpp
+	keymap.cpp \
+	utils.cpp
+
+noinst_HEADERS = \
+	config.hpp \
+	logger.hpp \
+	keymap.hpp \
+	utils.hpp
 
 clean-local:
-	rm -f *~
+	rm -f *~ *.pid *.log
 
 
 #EOF

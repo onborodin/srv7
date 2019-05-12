@@ -1,5 +1,26 @@
 /* autoconf.hpp.in.  Generated from configure.ac by autoheader.  */
 
+/* location of configuration files for ${PACKAGE} */
+#undef APP_CONFDIR
+
+/* location of data dir */
+#undef APP_DATADIR
+
+/* effective group id */
+#undef APP_GROUP
+
+/* location of libs */
+#undef APP_LIBDIR
+
+/* location of ${PACKAGE} logdir */
+#undef APP_LOGDIR
+
+/* location of pid file */
+#undef APP_RUNDIR
+
+/* effective user */
+#undef APP_USER
+
 /* Define to 1 if your C++ compiler doesn't accept -c and -o together. */
 #undef CXX_NO_MINUS_C_MINUS_O
 
@@ -92,6 +113,27 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* location of configuration files for ${PACKAGE} */
+#undef app_confdir
+
+/* location of data dir */
+#undef app_datadir
+
+/* effective group id */
+#undef app_group
+
+/* location of libs */
+#undef app_libdir
+
+/* location of ${PACKAGE} logdir */
+#undef app_logdir
+
+/* location of pid file */
+#undef app_rundir
+
+/* effective user */
+#undef app_user
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef gid_t

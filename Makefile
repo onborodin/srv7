@@ -15,6 +15,7 @@
 
 
 
+
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
     false; \
@@ -70,10 +71,10 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/main-cpp
-pkgincludedir = $(includedir)/main-cpp
-pkglibdir = $(libdir)/main-cpp
-pkglibexecdir = $(libexecdir)/main-cpp
+pkgdatadir = $(datadir)/srv
+pkgincludedir = $(includedir)/srv
+pkglibdir = $(libdir)/srv
+pkglibexecdir = $(libexecdir)/srv
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -86,6 +87,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = amd64-unknown-freebsd11.3
+host_triplet = amd64-unknown-freebsd11.3
 bin_PROGRAMS = srv$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -98,7 +101,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(am__DIST_COMMON)
+	$(am__configure_deps) $(noinst_HEADERS) $(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
@@ -107,9 +110,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_srv_OBJECTS = main.$(OBJEXT) connection.$(OBJEXT) server.$(OBJEXT) \
-	keymap.$(OBJEXT) request.$(OBJEXT) response.$(OBJEXT) \
-	utils.$(OBJEXT) logger.$(OBJEXT) handler.$(OBJEXT)
+am_srv_OBJECTS = main.$(OBJEXT) config.$(OBJEXT) logger.$(OBJEXT) \
+	keymap.$(OBJEXT) utils.$(OBJEXT)
 srv_OBJECTS = $(am_srv_OBJECTS)
 srv_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -148,6 +150,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+HEADERS = $(noinst_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)autoconf.hpp.in
 # Read a list of newline-separated strings from the standard input,
@@ -171,7 +174,7 @@ CTAGS = ctags
 CSCOPE = cscope
 AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/autoconf.hpp.in \
-	depcomp install-sh ltmain.sh missing
+	config.guess config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -192,15 +195,23 @@ distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/ziggi/srv7/missing aclocal
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
+APP_CONFDIR = /home/ziggi/srv7/
+APP_DATADIR = /home/ziggi/srv7/public/
+APP_GROUP = wheel
+APP_LIBDIR = /home/ziggi/srv7/
+APP_LOGDIR = /home/ziggi/srv7/
+APP_RUNDIR = /home/ziggi/srv7/
+APP_USER = ziggi
 AUTOCONF = ${SHELL} /home/ziggi/srv7/missing autoconf
 AUTOHEADER = ${SHELL} /home/ziggi/srv7/missing autoheader
 AUTOMAKE = ${SHELL} /home/ziggi/srv7/missing automake
 AWK = gawk
+CP = /bin/cp
 CPPFLAGS = 
 CXX = clang++ -std=c++17
 CXXCPP = clang++ -E -std=c++17
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -O3
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -210,6 +221,7 @@ ECHO_T =
 EGREP = /usr/bin/grep -E
 EXEEXT = 
 GREP = /usr/bin/grep
+HAVE_CP = true
 HAVE_CXX17 = 1
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
@@ -223,14 +235,15 @@ LTLIBOBJS =
 MAKEINFO = ${SHELL} /home/ziggi/srv7/missing makeinfo
 MKDIR_P = /usr/local/bin/gmkdir -p
 OBJEXT = o
-PACKAGE = main-cpp
+PACKAGE = srv
 PACKAGE_BUGREPORT = 
-PACKAGE_NAME = main.cpp
-PACKAGE_STRING = main.cpp 0.01
-PACKAGE_TARNAME = main-cpp
+PACKAGE_NAME = srv
+PACKAGE_STRING = srv 0.01
+PACKAGE_TARNAME = srv
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.01
 PATH_SEPARATOR = :
+ROOT_GROUP = wheel
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = 
@@ -245,15 +258,30 @@ am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
+app_confdir = /home/ziggi/srv7/
+app_datadir = /home/ziggi/srv7/public/
+app_group = wheel
+app_libdir = /home/ziggi/srv7/
+app_logdir = /home/ziggi/srv7/
+app_rundir = /home/ziggi/srv7/
+app_user = ziggi
 bindir = ${exec_prefix}/bin
+build = amd64-unknown-freebsd11.3
 build_alias = 
+build_cpu = amd64
+build_os = freebsd11.3
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
+host = amd64-unknown-freebsd11.3
 host_alias = 
+host_cpu = amd64
+host_os = freebsd11.3
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
@@ -266,13 +294,13 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /home/ziggi/srv7
 program_transform_name = s,x,x,
 psdir = ${docdir}
-sbindir = ${exec_prefix}/sbin
+sbindir = /home/ziggi/srv7
 sharedstatedir = ${prefix}/com
 srcdir = .
-sysconfdir = ${prefix}/etc
+sysconfdir = /home/ziggi/srv7/
 target_alias = 
 top_build_prefix = 
 top_builddir = .
@@ -286,17 +314,18 @@ ACLOCAL_AMFLAGS = -I m4
 LOCALBASE = /usr/local
 #AM_CXXFLAGS= -pthread -I${LOCALBASE}/include -Wall -DASIO_STANDALONE
 AM_CXXFLAGS = -pthread -I${LOCALBASE}/include -Wall
-AM_CPPFLAGS = -Wall -Wextra
 srv_SOURCES = \
 	main.cpp \
-	connection.cpp \
-	server.cpp \
-	keymap.cpp \
-	request.cpp \
-	response.cpp \
-	utils.cpp \
+	config.cpp \
 	logger.cpp \
-	handler.cpp
+	keymap.cpp \
+	utils.cpp
+
+noinst_HEADERS = \
+	config.hpp \
+	logger.hpp \
+	keymap.hpp \
+	utils.hpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -404,14 +433,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/connection.Po
-include ./$(DEPDIR)/handler.Po
+include ./$(DEPDIR)/config.Po
 include ./$(DEPDIR)/keymap.Po
 include ./$(DEPDIR)/logger.Po
 include ./$(DEPDIR)/main.Po
-include ./$(DEPDIR)/request.Po
-include ./$(DEPDIR)/response.Po
-include ./$(DEPDIR)/server.Po
 include ./$(DEPDIR)/utils.Po
 
 .cpp.o:
@@ -652,7 +677,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) autoconf.hpp
+all-am: Makefile $(PROGRAMS) $(HEADERS) autoconf.hpp
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -782,7 +807,7 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 clean-local:
-	rm -f *~
+	rm -f *~ *.pid *.log
 
 #EOF
 

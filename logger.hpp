@@ -22,18 +22,11 @@
 #ifndef SRV_LOGGER_HPP
 #define SRV_LOGGER_HPP
 
-#include <iostream>
 #include <fstream>
-#include <sstream>
-#include <functional>
-#include <condition_variable>
 #include <queue>
 #include <thread>
 #include <mutex>
-#include <chrono>
 #include <memory>
-#include <stdexcept>
-#include <iomanip>
 
 namespace srv {
 
@@ -50,11 +43,13 @@ class logger {
         std::vector<std::shared_ptr<std::thread>> threads;
         std::string path;
         std::shared_ptr<std::ofstream> file;
+        bool shutdown = false;
 
         std::string timestamp();
     public:
         logger(std::string path, int num_threads = 2);
         void log(std::string msg);
+        void stop();
 };
 
 } // namespace srv
