@@ -19,13 +19,20 @@ srv_SOURCES = \
 	config.cpp \
 	logger.cpp \
 	keymap.cpp \
-	utils.cpp
+	cover.cpp \
+	utils.cpp \
+	server.cpp \
+	connect.cpp \
+	request.cpp \
+	response.cpp \
+	handler.cpp
 
 noinst_HEADERS = \
 	config.hpp \
 	logger.hpp \
 	keymap.hpp \
-	utils.hpp
+	utils.hpp \
+	cover.hpp
 
 clean-local:
 	rm -f *~ *.pid *.log

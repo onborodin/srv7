@@ -111,7 +111,9 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_srv_OBJECTS = main.$(OBJEXT) config.$(OBJEXT) logger.$(OBJEXT) \
-	keymap.$(OBJEXT) utils.$(OBJEXT)
+	keymap.$(OBJEXT) cover.$(OBJEXT) utils.$(OBJEXT) \
+	server.$(OBJEXT) connect.$(OBJEXT) request.$(OBJEXT) \
+	response.$(OBJEXT) handler.$(OBJEXT)
 srv_OBJECTS = $(am_srv_OBJECTS)
 srv_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_$(V))
@@ -319,13 +321,20 @@ srv_SOURCES = \
 	config.cpp \
 	logger.cpp \
 	keymap.cpp \
-	utils.cpp
+	cover.cpp \
+	utils.cpp \
+	server.cpp \
+	connect.cpp \
+	request.cpp \
+	response.cpp \
+	handler.cpp
 
 noinst_HEADERS = \
 	config.hpp \
 	logger.hpp \
 	keymap.hpp \
-	utils.hpp
+	utils.hpp \
+	cover.hpp
 
 all: autoconf.hpp
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -434,9 +443,15 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/config.Po
+include ./$(DEPDIR)/connect.Po
+include ./$(DEPDIR)/cover.Po
+include ./$(DEPDIR)/handler.Po
 include ./$(DEPDIR)/keymap.Po
 include ./$(DEPDIR)/logger.Po
 include ./$(DEPDIR)/main.Po
+include ./$(DEPDIR)/request.Po
+include ./$(DEPDIR)/response.Po
+include ./$(DEPDIR)/server.Po
 include ./$(DEPDIR)/utils.Po
 
 .cpp.o:

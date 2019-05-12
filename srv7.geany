@@ -28,10 +28,9 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=0
-FILE_NAME_0=784;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fmain.cpp;0;4
-FILE_NAME_1=1281;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconfig.hpp;0;4
-FILE_NAME_2=1151;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fconfig.cpp;0;4
+current_page=1
+FILE_NAME_0=1092;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fmain.cpp;0;4
+FILE_NAME_1=3864;C++;0;EUTF-8;0;1;0;%2Fhome%2Fziggi%2Fsrv7%2Fcover.cpp;0;4
 
 [VTE]
 last_dir=/home/ziggi

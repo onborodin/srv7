@@ -19,9 +19,8 @@
  *
  */
 
-
-#ifndef SERVER_SERVER_HPP
-#define SERVER_SERVER_HPP
+#ifndef SRV_SERVER_HPP
+#define SRV_SERVER_HPP
 
 #include <string>
 #include <vector>
@@ -29,7 +28,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
 
-#include "connection.hpp"
+#include "connect.hpp"
 #include "config.hpp"
 
 namespace srv {
@@ -41,14 +40,14 @@ class server {
     boost::asio::ip::tcp::acceptor acceptor;
 
     boost::asio::ssl::context ssl_context;
-    std::shared_ptr<connection> connection;
-    srv::cover& cover;
+    std::shared_ptr<srv::connect> connect;
+    std::shared_ptr<srv::cover> cover;
 
     void accept();
     void stop();
 
   public:
-    server(srv::cover& cover);
+    server(std::shared_ptr<srv::cover> cover);
 
     void run();
 
