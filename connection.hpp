@@ -59,7 +59,7 @@ class connection : public std::enable_shared_from_this<connection> {
     connection(
         boost::asio::ssl::context& ssl_context,
         boost::asio::io_context& io_context,
-        srv::cover& factory
+        srv::cover& cover
     );
     connection(const connection&) = delete;
     connection& operator=(const connection&) = delete;

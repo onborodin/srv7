@@ -41,12 +41,12 @@ namespace srv {
 connection::connection(
         boost::asio::ssl::context& ssl_context,
         boost::asio::io_context& io_context,
-        srv::cover& factory) :
+        srv::cover& cover) :
             strand(io_context),
             socket(io_context),
             //io_context(io_context),
             ssl_context(ssl_context),
-            //cover(factory),
+            //cover(cover),
             handler(cover) {
     }
 

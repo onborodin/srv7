@@ -32,13 +32,13 @@
 
 namespace srv {
 
-server::server(srv::cover& factory) :
+server::server(srv::cover& cover) :
         io_context(),
         signals(io_context),
         acceptor(io_context),
         ssl_context(boost::asio::ssl::context::sslv23),
         connection(),
-        cover(factory)
+        cover(cover)
     {
     signals.add(SIGINT);
     signals.add(SIGTERM);
