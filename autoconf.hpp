@@ -5,7 +5,7 @@
 #define APP_CONFDIR "/home/ziggi/srv7/"
 
 /* location of data dir */
-#define APP_DATADIR "/home/ziggi/srv7/public/"
+#define APP_DATADIR "/home/ziggi/srv7/"
 
 /* effective group id */
 #define APP_GROUP "wheel"
@@ -119,7 +119,7 @@
 #define app_confdir "/home/ziggi/srv7/"
 
 /* location of data dir */
-#define app_datadir "/home/ziggi/srv7/public/"
+#define app_datadir "/home/ziggi/srv7/"
 
 /* effective group id */
 #define app_group "wheel"

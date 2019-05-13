@@ -35,13 +35,14 @@ namespace srv {
 
 class server {
   private:
+    std::shared_ptr<srv::cover> cover;
+
     boost::asio::io_context io_context;
     boost::asio::signal_set signals;
     boost::asio::ip::tcp::acceptor acceptor;
 
     boost::asio::ssl::context ssl_context;
     std::shared_ptr<srv::connect> connect;
-    std::shared_ptr<srv::cover> cover;
 
     void accept();
     void stop();

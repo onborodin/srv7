@@ -38,12 +38,16 @@ class handler {
         http::request request;
         http::response response;
         std::shared_ptr<srv::cover> cover;
+
+        std::string content_type(std::string& path);
     public:
         handler(std::shared_ptr<srv::cover> cover);
+
         void route(http::request& request, http::response& response);
-        std::string content_type(std::string& path);
-        void filehandler(http::request& request, http::response& response);
-        void logger(http::request& request, http::response& response);
+        void prepare_file(http::request& request, http::response& response);
+        void prepare_notfound(http::request& request, http::response& response);
+
+        void log_response(http::request& request, http::response& response);
 };
 
 } // namespace srv

@@ -51,21 +51,21 @@ std::string handler::content_type(std::string& path) {
     return content_type;
 }
 
-void handler::filehandler(http::request& request, http::response& response) {
-
-    //auto config = cover.config;
-    //auto logger = cover.logger;
+void handler::prepare_file(http::request& request, http::response& response) {
+    auto index_filename = cover->config->str_value("index");
+    auto public_dirname = cover->config->str_value("pubdir");
 
     std::string method = request.method();
     std::string resource = request.resource();
-    if (resource == "/") resource = "/index.html";
-    std::string path = "./public/" + resource;
+    if (resource == "/") resource = "/" + index_filename;
+    std::string path = public_dirname + "/" + resource;
+
 
     std::filesystem::path cpath;
     try {
         cpath = std::filesystem::canonical(std::filesystem::path(path));
     } catch (std::exception& e) {
-        std::cerr << "exception: " << e.what() << "\n";
+        //std::cerr << "exception: " << e.what() << "\n";
         cpath = std::filesystem::path(path);
     }
 
@@ -89,32 +89,32 @@ void handler::filehandler(http::request& request, http::response& response) {
     }
 }
 
-void handler::logger(http::request& request, http::response& response) {
-    std::stringstream ss;
-    ss << request.method() << " ";
-    ss << request.resource() << " ";
-    //ss << response.code() << " ";
-    ss << response.content().length();
-    //cover.logger->log(ss.str());
+void handler::prepare_notfound(http::request& request, http::response& response) {
+    response.code("404 Not Found");
+    response.header("content-type", "text/plain");
+    response.header("connect", "close");
+    response.content("Not found");
 }
 
 void handler::route(http::request& request, http::response& response) {
 
     auto resourse = request.resource();
-
-    //std::cerr << resourse << std::endl;
-
     if (!http::utils::match(resourse, "^/api/.*$")) {
-        filehandler(request, response);
-        logger(request, response);
-        return;
+        prepare_file(request, response);
+    } else {
+        prepare_notfound(request, response);
     }
-
-    response.code("404 Not Found");
-    response.header("content-type", "text/plain");
-    response.header("connect", "close");
-    response.content("Not found");
-    logger(request, response);
+    log_response(request, response);
 }
+
+void handler::log_response(http::request& request, http::response& response) {
+    std::stringstream ss;
+    ss << request.method() << " ";
+    ss << request.resource() << " ";
+    //ss << response.code() << " ";
+    ss << response.content().length();
+    cover->logger->log(ss.str());
+}
+
 
 } // namespace srv

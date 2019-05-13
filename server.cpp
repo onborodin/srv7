@@ -33,51 +33,52 @@
 namespace srv {
 
 server::server(std::shared_ptr<srv::cover> cover) :
+        cover(cover),
         io_context(),
         signals(io_context),
         acceptor(io_context),
         ssl_context(boost::asio::ssl::context::sslv23),
-        connect(),
-        cover(cover)
-    {
+        connect()
+{
+
+    auto address = cover->config->str_value("address");
+    auto port = cover->config->str_value("port");
+    auto backlog = cover->config->num_value("backlog");
+    auto crtfile = cover->config->str_value("crtfile");
+    auto keyfile = cover->config->str_value("keyfile");
+
     signals.add(SIGINT);
     signals.add(SIGTERM);
-
     auto signal_handler = [this](boost::system::error_code ec, int signo) {
         stop();
     };
-
     signals.async_wait(signal_handler);
+
 
     ssl_context.set_options(
         boost::asio::ssl::context::default_workarounds
         | boost::asio::ssl::context::no_sslv2
+        | boost::asio::ssl::context::no_sslv3
         | boost::asio::ssl::context::single_dh_use
     );
-    ssl_context.use_certificate_chain_file("srv.crt");
-    ssl_context.use_private_key_file("srv.key", boost::asio::ssl::context::pem);
+    ssl_context.use_certificate_chain_file(crtfile);
+    ssl_context.use_private_key_file(keyfile, boost::asio::ssl::context::pem);
 
     boost::asio::ip::tcp::resolver resolver(io_context);
-    boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve("0.0.0.0", "1026").begin();
+    boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(address, port).begin();
 
     acceptor.open(endpoint.protocol());
     acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
 
-    //boost::asio::socket_base::receive_buffer_size roption(819);
-    //acceptor.set_option(roption);
-    //boost::asio::socket_base::send_buffer_size woption(819);
-    //acceptor.set_option(woption);
-    //acceptor.non_blocking(true);
-
     acceptor.bind(endpoint);
-    acceptor.listen(1024);
+    acceptor.listen(backlog);
     accept();
 }
 
 void server::run() {
+    auto pool_size = cover->config->num_value("threads");
     std::vector<std::shared_ptr<boost::thread>> threads;
-    for (std::size_t i = 0; i < 10; ++i) {
-
+    for (std::size_t i = 0; i < pool_size; ++i) {
         auto f = [this]{ io_context.run(); };
         auto t = new boost::thread(std::move(f));
 
@@ -94,9 +95,9 @@ void server::accept() {
         if (!error) {
             connect->start();
         }
-        this->accept();
+        accept();
     };
-    connect.reset(new srv::connect(ssl_context, io_context, cover));
+    connect.reset(new srv::connect(cover, ssl_context, io_context));
     acceptor.async_accept(connect->get_socket(), callback);
 }
 

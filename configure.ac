@@ -312,7 +312,7 @@ AC_ARG_WITH(datadir,
     ])
 
 AS_IF([test "x$enable_devel_mode" = "xyes"], [
-    APP_DATADIR="${SRCDIR}/public/"
+    APP_DATADIR="${SRCDIR}/"
 ])
 
 AC_MSG_RESULT(storedir set as ${APP_STOREDIR})

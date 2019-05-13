@@ -57,9 +57,9 @@ class connect : public std::enable_shared_from_this<connect> {
 
   public:
     connect(
+        std::shared_ptr<srv::cover> cover,
         boost::asio::ssl::context& ssl_context,
-        boost::asio::io_context& io_context,
-        std::shared_ptr<srv::cover> cover
+        boost::asio::io_context& io_context
     );
     connect(const connect&) = delete;
     connect& operator=(const connect&) = delete;

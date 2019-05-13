@@ -93,8 +93,8 @@ void cover::write_pid() {
 }
 
 void cover::stdio_close() {
-    //std::freopen("/dev/null", "r", stdin);
-    //std::freopen("/dev/null", "w", stdout);
+    std::freopen("/dev/null", "r", stdin);
+    std::freopen("/dev/null", "w", stdout);
     //std::freopen("/dev/null", "w", stderr);
 }
 
@@ -103,14 +103,14 @@ void cover::init_config() {
 
     config->set_default("address", "0.0.0.0");
     config->set_default("port", "1024");
-    config->set_default("threads", 12);
+    config->set_default("threads", 10);
     config->set_default("backlog", 2048);
     config->set_default("index", "index.html");
 
     config->set_default("logfile", APP_LOGDIR "srv.log");
     config->set_default("pidfile", APP_LOGDIR "srv.pid");
-    config->set_default("crtfile", APP_CONFDIR "server.crt");
-    config->set_default("keyfile", APP_CONFDIR "server.key");
+    config->set_default("crtfile", APP_CONFDIR "srv.crt");
+    config->set_default("keyfile", APP_CONFDIR "srv.key");
     config->set_default("pubdir", APP_DATADIR "public");
 
     config->read(APP_CONFDIR "srv.conf");
@@ -127,6 +127,7 @@ void cover::init_filemap() {
     filemap->set("cpp", "text/plain");
     filemap->set("ico", "image/x-icon");
     filemap->set("svg", "image/svg+xml");
+    filemap->set("text", "text/plain");
 }
 
 void cover::init_logger() {
@@ -146,6 +147,7 @@ void cover::start() {
     stdio_close();
     write_pid();
     logger->log("application start");
+
     srv::server server(shared_from_this());
     server.run();
 }

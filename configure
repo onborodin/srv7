@@ -5994,7 +5994,7 @@ fi
 
 if test "x$enable_devel_mode" = "xyes"; then :
 
-    APP_DATADIR="${SRCDIR}/public/"
+    APP_DATADIR="${SRCDIR}/"
 
 fi
 

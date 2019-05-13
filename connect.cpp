@@ -39,30 +39,20 @@
 namespace srv {
 
 connect::connect(
-        boost::asio::ssl::context& ssl_context,
-        boost::asio::io_context& io_context,
-        std::shared_ptr<srv::cover> cover) :
-            strand(io_context),
-            socket(io_context),
-            //io_context(io_context),
-            ssl_context(ssl_context),
-            //cover(cover),
-            handler(cover) {
-    }
+    std::shared_ptr<srv::cover> cover,
+    boost::asio::ssl::context& ssl_context,
+    boost::asio::io_context& io_context) :
+        strand(io_context),
+        socket(io_context),
+        ssl_context(ssl_context),
+        handler(cover) {
+}
 
 boost::asio::ip::tcp::socket& connect::get_socket() {
     return socket;
 }
 
 void connect::start() {
-    //boost::asio::socket_base::receive_buffer_size option(81920);
-
-    boost::asio::socket_base::receive_buffer_size roption(81920);
-    socket.set_option(roption);
-
-    boost::asio::socket_base::send_buffer_size woption(81920);
-    socket.set_option(woption);
-
     using sslsocket = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
     ssl_socket = std::make_shared<sslsocket>(std::move(socket), ssl_context);
     ssl_handshake();
@@ -108,16 +98,10 @@ void connect::read_content() {
         if (!ec) {
             handler.route(request, response);
             write();
-        } else {
+        } else if (ec != boost::asio::error::operation_aborted) {
             stop();
         }
-
-        //} else if (ec != boost::asio::error::operation_aborted) {
-            //stop();
-        //}
-
     };
-
     auto promise_len = request.content_length();
     auto actual_len = request.content().length();
     int demaind = promise_len - actual_len;
@@ -128,12 +112,11 @@ void connect::read_content() {
 void connect::write() {
     auto self(shared_from_this());
     auto cb = [this, self](boost::system::error_code error, std::size_t) {
-        //if (!error) {
+        if (!error) {
             stop();
-        //}
-        //if (error != boost::asio::error::operation_aborted) {
-            //stop();
-        //}
+        } else if (error != boost::asio::error::operation_aborted) {
+            stop();
+        }
     };
     response_buffer = response.str();
     boost::asio::async_write(*ssl_socket, boost::asio::buffer(response_buffer), boost::asio::bind_executor(strand, cb));
@@ -142,7 +125,6 @@ void connect::write() {
 void connect::stop() {
     boost::system::error_code ignored_ec;
     ssl_socket->shutdown(ignored_ec);
-    //ssl_socket->next_layer().close();
 }
 
 } // namespace srv
